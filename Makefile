@@ -9,8 +9,8 @@ all: obj/kernel obj/bootloader
 	dd if=obj/kernel of=bin/diskc.img bs=512 conv=notrunc seek=3
 	
 
-obj/kernel: obj/kernel_asm.o obj/kernel_c.o obj/strings.o
-	ld86 -o obj/kernel -d obj/kernel_c.o obj/kernel_asm.o obj/strings.o
+obj/kernel: obj/kernel_asm.o obj/kernel_c.o
+	ld86 -o obj/kernel -d obj/kernel_c.o obj/kernel_asm.o
 
 obj/kernel_asm.o: src/kernel.asm
 	mkdir -p obj
