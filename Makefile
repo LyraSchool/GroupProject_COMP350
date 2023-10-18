@@ -21,15 +21,6 @@ obj/kernel_c.o: src/kernel.c
 	bcc $(CFLAGS) -o obj/kernel_c.o src/kernel.c
 	# bcc -ansi -c -o obj/kernel_c.o src/kernel.c
 
-# Kernel Modules
-
-obj/strings.o: src/strings.c
-	mkdir -p obj
-	bcc $(CFLAGS) -o obj/strings.o src/strings.c
-# End Kernel Modules
-
-
-
 obj/bootloader: src/bootloader.asm
 	nasm -o obj/bootloader  src/bootloader.asm
 
@@ -40,7 +31,3 @@ clean:
 .phony: qemu
 qemu: all
 	qemu-system-x86_64 -drive format=raw,file=bin/diskc.img
-
-
-
-

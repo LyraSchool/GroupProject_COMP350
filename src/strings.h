@@ -1,3 +1,0 @@
-
-void puts(char*);
-
