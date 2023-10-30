@@ -14,8 +14,8 @@ Using stem from Lyra
 
 ### Project B
 
-- Step 1: X
+- Step 1: Alicia & Lyra
 - Step 2: Lyra
-- Step 3: X
+- Step 3: Alicia & Lyra
 - Step 4: X
 - Step 5: X

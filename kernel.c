@@ -1,6 +1,13 @@
+/*
+Made By:
+Lyra Brown
+Alicia Kenneally
+Lauren Rezendes
+*/
 
 void readString(char*);
 void printChar(char);
+void readSector(char*, int);
 
 void printString(char*);
 
@@ -9,12 +16,20 @@ void main()
 {
 	/* Variables have to be declared at the top of the function. */
 	char buf[50];
+    char buffer[512];
+
+    printString("Hello World");
+    printString("\r\n");
 
 	printString("Enter a string: ");
 
 	readString(buf);
 	printString(buf);
 	printString("\r\n");
+
+    readSector(buffer, 30);
+    printString(buffer);
+    printString("\r\n");
 
 	while(1);
 }
@@ -61,3 +76,22 @@ void readString(char* buffer)
     printChar(0xa); // LF
 }
 
+void readSector(char* buffer, int sector)
+{
+    int ax = 2 * 256 + 1;
+    int bx = buffer;
+    int cx = 0 * 256 + (sector + 1);
+    int dx = 0 * 256 + 0x80;
+
+    interrupt(0x13, ax, bx, cx, dx);
+}
+
+void printString(char* chars)
+{
+    int i = 0;
+    while (chars[i] != 0x0)
+    {
+        printChar(chars[i]);
+        i++;
+    }
+}

@@ -1,2 +1,7 @@
 .vscode/
 
+bootloader
+diskc.img
+kernel
+kernel_asm.o
+kernel_c.o

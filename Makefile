@@ -1,3 +1,5 @@
+# Makefile maintained by Lyra
+
 CFLAGS = -ansi -c -I.
 
 
@@ -6,6 +8,7 @@ all: kernel bootloader
 	dd if=/dev/zero of=diskc.img bs=512 count=1000
 	dd if=bootloader of=diskc.img bs=512 count=1 conv=notrunc
 	dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
+	dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
 	
 
 kernel: kernel_asm.o kernel_c.o
