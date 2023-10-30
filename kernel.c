@@ -1,3 +1,4 @@
+
 void readString(char*);
 void printChar(char);
 
