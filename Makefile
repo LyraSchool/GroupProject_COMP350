@@ -1,33 +1,29 @@
-CFLAGS = -ansi -c -I./src/
+CFLAGS = -ansi -c -I.
 
 
 .phony: all
-all: obj/kernel obj/bootloader
-	mkdir -p bin
-	dd if=/dev/zero of=bin/diskc.img bs=512 count=1000
-	dd if=obj/bootloader of=bin/diskc.img bs=512 count=1 conv=notrunc
-	dd if=obj/kernel of=bin/diskc.img bs=512 conv=notrunc seek=3
+all: kernel bootloader
+	dd if=/dev/zero of=diskc.img bs=512 count=1000
+	dd if=bootloader of=diskc.img bs=512 count=1 conv=notrunc
+	dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
 	
 
-obj/kernel: obj/kernel_asm.o obj/kernel_c.o
-	ld86 -o obj/kernel -d obj/kernel_c.o obj/kernel_asm.o
+kernel: kernel_asm.o kernel_c.o
+	ld86 -o kernel -d kernel_c.o kernel_asm.o
 
-obj/kernel_asm.o: src/kernel.asm
-	mkdir -p obj
-	as86 src/kernel.asm -o obj/kernel_asm.o
+kernel_asm.o: kernel.asm
+	as86 kernel.asm -o kernel_asm.o
 
-obj/kernel_c.o: src/kernel.c
-	mkdir -p obj
-	bcc $(CFLAGS) -o obj/kernel_c.o src/kernel.c
-	# bcc -ansi -c -o obj/kernel_c.o src/kernel.c
+kernel_c.o: kernel.c
+	bcc $(CFLAGS) -o kernel_c.o kernel.c
 
-obj/bootloader: src/bootloader.asm
-	nasm -o obj/bootloader  src/bootloader.asm
+bootloader: bootloader.asm
+	nasm -o bootloader  bootloader.asm
 
 .phony: clean
 clean:
-	-rm -r obj bin
+	-rm *.o
 
 .phony: qemu
 qemu: all
-	qemu-system-x86_64 -drive format=raw,file=bin/diskc.img
+	qemu-system-x86_64 -drive format=raw,file=diskc.img
