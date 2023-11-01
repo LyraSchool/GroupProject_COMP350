@@ -1,1 +1,2 @@
-If this message prints out, then your readSector function is working correctly!
+If this message prints out, then your readFile function is working correctly!
+

@@ -4,12 +4,38 @@ CFLAGS = -ansi -c -I.
 
 
 .phony: all
-all: kernel bootloader
+all: kernel bootloader loadfile
 	dd if=/dev/zero of=diskc.img bs=512 count=1000
 	dd if=bootloader of=diskc.img bs=512 count=1 conv=notrunc
-	dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
-	dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
+	./loadfile kernel
+	./loadfile message.txt
+#dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
+#dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
 	
+# Tools:
+loadfile: loadfile.c
+	gcc -o loadfile loadfile.c
+
+
+# sources:
+
+userlib.o: userlib.asm
+	as86 userlib.asm -o userlib.o
+
+tstpr1: tstpr1.o userlib.o
+	ld86 -o tstpr1 -d tstpr1.o userlib.o
+
+tstpr2: tstpr2.o userlib.o
+	ld86 -o tstpr2 -d tstpr2.o userlib.o
+
+tstpr1.o: tstpr1.c
+	bcc $(CFLAGS) -o tstpr1.o tstpr1.c
+
+tstpr2.o: tstpr2.c
+	bcc $(CFLAGS) -o tstpr2.o tstpr2.c
+
+
+
 
 kernel: kernel_asm.o kernel_c.o
 	ld86 -o kernel -d kernel_c.o kernel_asm.o
