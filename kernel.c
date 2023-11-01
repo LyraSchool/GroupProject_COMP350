@@ -31,6 +31,9 @@ void main()
     printString(buffer);
     printString("\r\n");
 
+	makeInterrupt21();
+	interrupt(0x21,0,0,0,0);
+
 	while(1);
 }
 
@@ -94,4 +97,11 @@ void printString(char* chars)
         printChar(chars[i]);
         i++;
     }
+
+}
+
+void handleInterrupt21(int ax, int bx, int cx, int dx)
+{
+
+	printString("Hello world");
 }
