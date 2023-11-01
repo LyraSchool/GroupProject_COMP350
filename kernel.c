@@ -1,25 +1,26 @@
-/*
-Made By:
-Lyra Brown
-Alicia Kenneally
-Lauren Rezendes
-*/
+
+//Made By:
+//Lyra Brown
+//Alicia Kenneally
+//Lauren Rezendes
+
 
 void readString(char*);
 void printChar(char);
 void readSector(char*, int);
-
+void handleInterrupt21(int, int, int, int);
 void printString(char*);
+
 
 /* Depends on printString to exist. */
 void main()
 {
 	/* Variables have to be declared at the top of the function. */
 	char buf[50];
-    char buffer[512];
+	char buffer[512];
 
-    printString("Hello World");
-    printString("\r\n");
+	printString("Hello World");
+	printString("\r\n");
 
 	printString("Enter a string: ");
 
@@ -27,9 +28,9 @@ void main()
 	printString(buf);
 	printString("\r\n");
 
-    readSector(buffer, 30);
-    printString(buffer);
-    printString("\r\n");
+	readSector(buffer, 30);
+	printString(buffer);
+	printString("\r\n");
 
 	makeInterrupt21();
 	interrupt(0x21,0,0,0,0);
@@ -102,6 +103,6 @@ void printString(char* chars)
 
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
-
-	printString("Hello world");
+	printString("Hello World!\r\n");
 }
+ 
