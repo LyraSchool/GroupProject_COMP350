@@ -17,5 +17,6 @@ Using stem from Lyra
 - Step 1: Alicia & Lyra
 - Step 2: Lyra
 - Step 3: Alicia & Lyra
-- Step 4: X
-- Step 5: X
+- Step 4: Alicia & Lauren
+- Step 5: Alicia & Lyra & Lauren
+ 
