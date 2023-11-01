@@ -18,6 +18,7 @@ void main()
 	/* Variables have to be declared at the top of the function. */
 	char buf[50];
 	char buffer[512];
+	char line[80];
 
 	printString("Hello World");
 	printString("\r\n");
@@ -33,7 +34,8 @@ void main()
 	printString("\r\n");
 
 	makeInterrupt21();
-	interrupt(0x21,0,0,0,0);
+	interrupt(0x21,1,line,0,0);
+	interrupt(0x21,0,line,0,0);
 
 	while(1);
 }
@@ -103,6 +105,14 @@ void printString(char* chars)
 
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
-	printString("Hello World!\r\n");
+	if ( ax == 0 ) {
+		printString((char*) bx);
+	} else if ( ax == 1 ) {
+		readString((char*) bx);
+	} else if ( ax == 2 ) {
+		readSector((char*) bx, cx);
+	} else {
+		printString("Invalid ax for Interrupt21\r\n");
+	}
+
 }
- 

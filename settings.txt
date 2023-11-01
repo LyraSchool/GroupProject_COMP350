@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-DiskC /home/lauren/Desktop/GroupProject_COMP350/diskc.img 0 63 255 1000
-=======
 DiskC /home/aliciak_vm/Desktop/GroupProject_COMP350/diskc.img 0 63 255 1000
->>>>>>> fd5ea2a63c2d64e642eb55a6f2242ae7b5ac88d5
 ROM resource/bios.bin
 VideoROM resource/vgabios.bin
