@@ -1,15 +1,16 @@
-/*
-Made By:
-Lyra Brown
-Alicia Kenneally
-Lauren Rezendes
-*/
+
+//Made By:
+//Lyra Brown
+//Alicia Kenneally
+//Lauren Rezendes
+
 
 void readString(char*);
 void printChar(char);
 void readSector(char*, int);
-
+void handleInterrupt21(int, int, int, int);
 void printString(char*);
+
 
 /* Depends on printString to exist. */
 void main()
@@ -20,6 +21,9 @@ void main()
 
     printString("Hello World");
     printString("\r\n");
+
+	makeInterrupt21();
+	interrupt(0x21, 0, 0, 0, 0);
 
 	printString("Enter a string: ");
 
@@ -95,3 +99,10 @@ void printString(char* chars)
         i++;
     }
 }
+
+void handleInterrupt21(int ax, int bx, int cx, int dx){
+
+	printString("Hello World!\r\n");
+
+}
+ 
