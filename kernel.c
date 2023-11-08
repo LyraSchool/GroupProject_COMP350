@@ -16,6 +16,7 @@ void printString(char*);
 void main()
 {
 	/* Variables have to be declared at the top of the function. */
+	/*
 	char buf[50];
 	char buffer[512];
 	char line[80];
@@ -36,7 +37,10 @@ void main()
 	makeInterrupt21();
 	interrupt(0x21,1,line,0,0);
 	interrupt(0x21,0,line,0,0);
+	*/
 
+	
+	
 	while(1);
 }
 

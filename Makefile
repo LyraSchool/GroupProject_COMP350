@@ -52,6 +52,11 @@ bootloader: bootloader.asm
 .phony: clean
 clean:
 	-rm *.o
+	-rm bootloader
+	-rm kernel
+	-rm loadfile
+	-rm tstpr1
+	-rm tstpr2
 
 .phony: qemu
 qemu: all
