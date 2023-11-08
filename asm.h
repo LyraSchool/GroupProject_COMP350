@@ -1,5 +1,5 @@
-#ifndef ASM.H
-#define ASM.H
+#ifndef ASM_H
+#define ASM_H
 
 void readString(char*);
 void printChar(char);
