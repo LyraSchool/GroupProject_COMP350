@@ -54,8 +54,9 @@ void main()
 	else
 		interrupt(0x21, 0, "messag not found\r\n", 0, 0);
 
-	
-	
+
+	interrupt(0x21, 4, "tstpr1", 0, 0);
+
 	while(1);
 }
 
@@ -132,6 +133,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		readSector((char*) bx, cx);
 	} else if ( ax == 3 ) {
 		readFile((char*)cx, (char*)bx, (int*)dx);
+	} else if ( ax == 4) {
+		executeProgram((char*) bx);
 	} else {
 		printString("Invalid ax for Interrupt21\r\n");
 	}
