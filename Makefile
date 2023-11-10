@@ -34,11 +34,14 @@ tstpr1.o: tstpr1.c
 tstpr2.o: tstpr2.c
 	bcc $(CFLAGS) -o tstpr2.o tstpr2.c
 
+numbers.o: numbers.c numbers.h
+	bcc $(CFLAGS) -o numbers.o numbers.c
 
+files.o: files.c files.h asm.h
+	bcc $(CFLAGS) -o files.o files.c 
 
-
-kernel: kernel_asm.o kernel_c.o
-	ld86 -o kernel -d kernel_c.o kernel_asm.o
+kernel: kernel_asm.o kernel_c.o files.o numbers.o
+	ld86 -o kernel -d kernel_c.o kernel_asm.o files.o numbers.o
 
 kernel_asm.o: kernel.asm
 	as86 kernel.asm -o kernel_asm.o

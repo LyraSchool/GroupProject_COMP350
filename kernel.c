@@ -4,6 +4,9 @@
 //Alicia Kenneally
 //Lauren Rezendes
 
+#include "files.h"
+#include "program.h"
+
 
 void readString(char*);
 void printChar(char);
@@ -38,6 +41,18 @@ void main()
 	interrupt(0x21,1,line,0,0);
 	interrupt(0x21,0,line,0,0);
 	*/
+
+	char buffer[13312];
+	int sectorsRead;
+
+
+	makeInterrupt21();
+	interrupt(0x21, 3, "messag", buffer, &sectorsRead);
+	
+	if (sectorsRead > 0)
+		interrupt(0x21, 0, buffer, 0, 0);
+	else
+		interrupt(0x21, 0, "messag not found\r\n", 0, 0);
 
 	
 	
@@ -115,6 +130,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		readString((char*) bx);
 	} else if ( ax == 2 ) {
 		readSector((char*) bx, cx);
+	} else if ( ax == 3 ) {
+		readFile((char*)cx, (char*)bx, (int*)dx);
 	} else {
 		printString("Invalid ax for Interrupt21\r\n");
 	}
