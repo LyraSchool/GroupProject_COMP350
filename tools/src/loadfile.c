@@ -4,16 +4,30 @@
 //Loads a file into the file system
 //This should be compiled with gcc and run outside of the OS
 
+// Modified Nov 15, 2023, Lyra Brown
+// Added directory handling
+
 #include <stdio.h>
+#include <libgen.h>
 
 int main(int argc, char* argv[])
 {
 	int i;
 
-	if (argc<2)
+	char fileName[7];
+
+	if (argc<3)
 	{
-		printf("Specify file name to load\n");
+		printf("Usage: %s <file> <floppy>\n", argv[0]);
 		return 0;
+	}
+
+
+	char* fullFileName = basename(argv[1]);
+	for (i = 0; i < 6; i++)
+	{
+		fileName[i] = fullFileName[i];
+		if (fullFileName[i] == '\0') break;
 	}
 
 	//open the source file
@@ -63,9 +77,9 @@ int main(int argc, char* argv[])
 	//copy the name over
 	for (i=0; i<6; i++)
 	{
-		if(argv[1][i]==0)
+		if(fileName[i]==0)
 			break;
-		dir[dirindex+i]=argv[1][i];
+		dir[dirindex+i]=fileName[i];
 	}
 
 	dirindex=dirindex+6;
@@ -116,13 +130,13 @@ int main(int argc, char* argv[])
 	}
 
 	//write the map and directory back to the floppy image
-        fseek(floppy,512,SEEK_SET);
-        for(i=0; i<512; i++)
-		fputc(map[i],floppy);
-        
-        fseek(floppy,512*2,SEEK_SET);
-        for (i=0; i<512; i++)
-		fputc(dir[i],floppy);
+	fseek(floppy,512,SEEK_SET);
+	for(i=0; i<512; i++)
+	fputc(map[i],floppy);
+	
+	fseek(floppy,512*2,SEEK_SET);
+	for (i=0; i<512; i++)
+	fputc(dir[i],floppy);
 
 	fclose(floppy);
 	fclose(loadFil);

@@ -165,6 +165,8 @@ void terminate()
 
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
+	char printbuf[31];
+
 	if ( ax == 0 ) {
 		printString((char*) bx);
 	} else if ( ax == 1 ) {
@@ -178,7 +180,38 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 5) {
 		terminate();
 	} else {
-		printString("Invalid ax for Interrupt21\r\n");
+		// Invalid ax for Interrupt21\r\n
+		printbuf[ 0] = 'I';
+		printbuf[ 1] = 'n';
+		printbuf[ 2] = 'v';
+		printbuf[ 3] = 'a';
+		printbuf[ 4] = 'l';
+		printbuf[ 5] = 'i';
+		printbuf[ 6] = 'd';
+		printbuf[ 7] = ' ';
+		printbuf[ 8] = 'a';
+		printbuf[ 9] = 'x';
+		printbuf[10] = ' ';
+		printbuf[11] = 'f';
+		printbuf[12] = 'o';
+		printbuf[13] = 'r';
+		printbuf[14] = ' ';
+		printbuf[15] = 'I';
+		printbuf[16] = 'n';
+		printbuf[17] = 't';
+		printbuf[18] = 'e';
+		printbuf[19] = 'r';
+		printbuf[20] = 'r';
+		printbuf[21] = 'u';
+		printbuf[22] = 'p';
+		printbuf[23] = 't';
+		printbuf[24] = '2';
+		printbuf[25] = '1';
+		printbuf[26] = '\r';
+		printbuf[27] = '\n';
+		printbuf[28] = '\0';
+		
+		printString(printbuf);
 	}
 
 }

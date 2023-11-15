@@ -1,3 +1,6 @@
+
+#define BUFFERLEN 200
+
 void syscall(void*, void*, void*, void*);
 
 void handleCommand(char* buffer);
@@ -6,7 +9,7 @@ int strcmp(char* s1, char* s2, int n);
 void main()
 {
     char* prompt = "A:> ";
-    char linebuffer[200];
+    char linebuffer[BUFFERLEN];
 
     while (1)
     {
@@ -77,8 +80,22 @@ void builtin_exec(char* buffer)
     syscall(4, filename, 0, 0);
 }
 
+void sanitizeCommand(char* buffer)
+{
+    int i;
+    for (i = 0; i < BUFFERLEN; i++)
+    {
+        if (buffer[i] == '\0' && i > 0)
+        {
+            buffer[i - 1] = '\0';
+        }
+    }
+}
+
 void handleCommand(char* buffer)
 {
+    sanitizeCommand(buffer);
+
     if (!strcmp(buffer, "type", 4))
     {
         builtin_type(buffer);
