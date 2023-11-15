@@ -133,26 +133,6 @@ void printString(char* chars)
 
 void terminate()
 {
-	// char term[14];
-	// term[0] = 'T';
-	// term[1] = 'e';
-	// term[2] = 'r';
-	// term[3] = 'm';
-	// term[4] = 'i';
-	// term[5] = 'n';
-	// term[6] = 'a';
-	// term[7] = 't';
-	// term[8] = 'i';
-	// term[9] = 'n';
-	// term[10] = 'g';
-	// term[11] = '\r';
-	// term[12] = '\n';
-	// term[13] = '\0';
-	
-	//printString("Terminating");
-	// printString(term);
-	// while(1);
-
 	char shellname[6];
 	shellname[0] = 's';
 	shellname[1] = 'h';

@@ -8,7 +8,7 @@ int strcmp(char* s1, char* s2, int n);
 
 void main()
 {
-    char* prompt = "A:> ";
+    char* prompt = "\r\nA:> ";
     char linebuffer[BUFFERLEN];
 
     while (1)
@@ -39,7 +39,7 @@ void builtin_type(char* buffer)
 {
     char filedata[13312];
     char filename[7];
-    int sectorsRead;
+    int sectorsRead = 0;
 
     filename[0] = buffer[5];
     filename[1] = buffer[6];
@@ -51,7 +51,7 @@ void builtin_type(char* buffer)
     
 
 
-    syscall(3, filedata, filename, &sectorsRead);
+    syscall(3, filename, filedata, &sectorsRead);
 
     if (sectorsRead == 0)
     {
@@ -62,6 +62,8 @@ void builtin_type(char* buffer)
     }
 
     syscall(0, filedata, 0, 0);
+    
+    //syscall(5, 0, 0, 0);
 }
 
 void builtin_exec(char* buffer)
