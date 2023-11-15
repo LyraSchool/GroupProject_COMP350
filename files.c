@@ -22,7 +22,8 @@ int getDirname(char* fileName, char* directory)
 	else return addr;
 }
 
-void readFile(char* buffer, char* fileName, int* sectorsRead)
+
+void q_readFile(char* buffer, char* fileName, int* sectorsRead)
 {
 	// readFile implementation here
 	int dirAddr;	
@@ -30,31 +31,122 @@ void readFile(char* buffer, char* fileName, int* sectorsRead)
 	char* sector;
 	char secbuf[512];
 	int i;
+	int secRead = 0;
+
+	// Debug vars
+	char printbuf[200];
 
 	readSector(directory, 2);
 	dirAddr = getDirname(fileName, directory);
+	*sectorsRead = 0;
 	
-	
+	if (dirAddr == -1) return;
 
-	if (dirAddr == -1)
+
+	sector = directory + (dirAddr * 16) + 6;
+	while (*sector != 0)
+	{
+		interrupt(0x21, 0, "Reading sector ", 0, 0);
+		itoa(*sector, printbuf);
+		interrupt(0x21, 0, printbuf, 0, 0);
+		interrupt(0x21, 0, "\r\n", 0, 0);
+		
+		
+		readSector(secbuf, *sector);
+		interrupt(0x21, 0, "Reading sector\r\n", 0, 0);
+		for (i = 0; i < 512; i++)
+		{
+			// interrupt(0x21, 0, "Writing to address ", 0, 0);
+			// itoa((secRead * 512) + i, printbuf);
+			// interrupt(0x21, 0, printbuf, 0, 0);
+			// interrupt(0x21, 0, "\r\n", 0, 0);
+			buffer[(secRead * 512) + i] = secbuf[i];
+		}
+		interrupt(0x21, 0, "read sector\r\n", 0, 0);
+		
+		secRead = secRead + 1;
+		sector++;
+		interrupt(0x21, 0, "moving to sector ", 0, 0);
+		itoa(*sector, printbuf);
+		interrupt(0x21, 0, printbuf, 0, 0);
+		interrupt(0x21, 0, "\r\n", 0, 0);
+
+	}
+
+	*sectorsRead = secRead;
+
+	interrupt(0x21, 0, "Done reading", 0, 0);
+		
+
+	
+}
+
+void readFile(char* buffer, char* fileName, int* sectorsRead)
+{
+	char directory[512];
+	char sectordata[512];
+	char sectors[26];
+
+
+	int secRead = 0;
+
+	int direntry, i, j;
+	int match = 1;
+
+	// Debug vars
+	char printbuf[100];
+	char fname[7];
+
+	readSector(directory, 2);
+
+	for (direntry = 0; direntry < 16; direntry++)
+	{
+		match = 1;
+
+		fname[0] = directory[(direntry * 32) + 0];
+		fname[1] = directory[(direntry * 32) + 1];
+		fname[2] = directory[(direntry * 32) + 2];
+		fname[3] = directory[(direntry * 32) + 3];
+		fname[4] = directory[(direntry * 32) + 4];
+		fname[5] = directory[(direntry * 32) + 5];
+		fname[6] = '\0';
+		
+		for (i = 0; i < 6; i++)
+		{
+			if (directory[(direntry * 32) + i] != fileName[i]) match = 0;
+		}
+
+		if (match)
+		{
+			
+			break;
+		}
+	}
+
+	if (!match)
 	{
 		*sectorsRead = 0;
 		return;
 	}
 
-	sector = directory + (dirAddr * 16) + 6;
-	while (*sector != 0)
+	for (i = 0; i < 26; i++)
 	{
-		
-		readSector(secbuf, *sector);
-		for (i = 0; i < 512; i++)
-		{
-			buffer[(*sectorsRead * 512) + i] = secbuf[i];
-		}
-		*sectorsRead = *sectorsRead + 1;
-		sector++;
+		sectors[i] = directory[(direntry * 32) + 6 + i];
+
 	}
 
-	
-}
 
+	for (i = 0; i < 26; i++)
+	{
+		readSector(sectordata, sectors[i]);
+
+		for (j = 0; j < 512; j++)
+		{
+			buffer[(i * 512) + j] = sectordata[j];
+		}
+
+		secRead++;
+	}
+
+	*sectorsRead = secRead;
+}

@@ -13,6 +13,7 @@ void printChar(char);
 void readSector(char*, int);
 void handleInterrupt21(int, int, int, int);
 void printString(char*);
+void terminate();
 
 
 /* Depends on printString to exist. */
@@ -45,6 +46,9 @@ void main()
 	char buffer[13312];
 	int sectorsRead;
 
+	// Clears the screen
+	interrupt(0x10, 0x03, 0, 0, 0);
+
 
 	makeInterrupt21();
 	interrupt(0x21, 3, "messag", buffer, &sectorsRead);
@@ -54,6 +58,7 @@ void main()
 	else
 		interrupt(0x21, 0, "messag not found\r\n", 0, 0);
 
+	interrupt(0x21, 0, "Finished with readfile, moving on to executeProgram\r\n", 0, 0);
 
 	interrupt(0x21, 4, "tstpr1", 0, 0);
 
@@ -123,6 +128,18 @@ void printString(char* chars)
 
 }
 
+void terminate()
+{
+	char shellname[6];
+	shellname[0] = 's';
+	shellname[1] = 'h';
+	shellname[2] = 'e';
+	shellname[3] = 'l';
+	shellname[4] = 'l';
+	shellname[5] = '\0';
+	executeProgram(shellname);
+}
+
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
 	if ( ax == 0 ) {
@@ -134,7 +151,12 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 3 ) {
 		readFile((char*)cx, (char*)bx, (int*)dx);
 	} else if ( ax == 4) {
+		interrupt(0x21, 0, "Int21 hit - executing \"", 0, 0);
+		interrupt(0x21, 0, (char*) bx, 0, 0);
+		interrupt(0x21, 0, "\".\r\n", 0, 0);
 		executeProgram((char*) bx);
+	} else if ( ax == 5) {
+		terminate();
 	} else {
 		printString("Invalid ax for Interrupt21\r\n");
 	}

@@ -14,10 +14,12 @@ void executeProgram(char* filename)
 	int i;
 
 	//Step 1 of Step 2
-	readFile(filename, buffer, &sectorsRead);
+	interrupt(0x21, 0, "EXP - Reading program\r\n", 0, 0);
+	readFile(buffer, filename, &sectorsRead);
 
 	//Step 2 of Step 2
 	interrupt(0x21, 0, "Starting the for loop\r\n", 0, 0);
+
 	for ( i=0; i<13312; i++){
 		putInMemory(segment, i, buffer[i]);
 	}
@@ -27,9 +29,9 @@ void executeProgram(char* filename)
 }
 
 //Step 4 of Step 2
-void interrupt0x21(char* bx){
+// void interrupt0x21(char* bx){
 
-	executeProgram(bx);
+// 	executeProgram(bx);
 
-}
+// }
 
