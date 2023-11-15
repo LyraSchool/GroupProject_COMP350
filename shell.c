@@ -32,26 +32,65 @@ int strcmp(char* s1, char* s2, int n)
     return 0;
 }
 
+void builtin_type(char* buffer)
+{
+    char filedata[13312];
+    char filename[7];
+    int sectorsRead;
+
+    filename[0] = buffer[5];
+    filename[1] = buffer[6];
+    filename[2] = buffer[7];
+    filename[3] = buffer[8];
+    filename[4] = buffer[9];
+    filename[5] = buffer[10];
+    filename[6] = '\0';
+    
+
+
+    syscall(3, filedata, filename, &sectorsRead);
+
+    if (sectorsRead == 0)
+    {
+        syscall(0, "Unable to find file \"", 0, 0);
+        syscall(0, filename, 0, 0);
+        syscall(0, "\"\r\n", 0, 0);
+        return;
+    }
+
+    syscall(0, filedata, 0, 0);
+}
+
+void builtin_exec(char* buffer)
+{
+    char filename[7];
+
+
+    filename[0] = buffer[5];
+    filename[1] = buffer[6];
+    filename[2] = buffer[7];
+    filename[3] = buffer[8];
+    filename[4] = buffer[9];
+    filename[5] = buffer[10];
+    filename[6] = '\0';
+
+    syscall(4, filename, 0, 0);
+}
+
 void handleCommand(char* buffer)
 {
     if (!strcmp(buffer, "type", 4))
     {
-
-    } else if (!strcmp(buffer, "exec", 4))
+        builtin_type(buffer);
+    }
+    else if (!strcmp(buffer, "exec", 4))
     {
-
-    } else {
+        builtin_exec(buffer);
+    }
+    else
+    {
         syscall(0, "Unrecognized command: \"", 0, 0);
         syscall(0, buffer, 0, 0);
         syscall(0, "\"\r\n", 0, 0);
     }
-}
-
-void builtin_type(char* filename)
-{
-    char buffer[11312];
-    int sectorsRead;
-
-    syscall(3, filename, buffer, &sectorsRead);
-    syscall(0, buffer, 0, 0);
 }

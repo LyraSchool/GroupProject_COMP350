@@ -48,19 +48,22 @@ void main()
 
 	// Clears the screen
 	interrupt(0x10, 0x03, 0, 0, 0);
-
-
+	// Creates int0x21
 	makeInterrupt21();
-	interrupt(0x21, 3, "messag", buffer, &sectorsRead);
+
+
+	// interrupt(0x21, 3, "messag", buffer, &sectorsRead);
 	
-	if (sectorsRead > 0)
-		interrupt(0x21, 0, buffer, 0, 0);
-	else
-		interrupt(0x21, 0, "messag not found\r\n", 0, 0);
+	// if (sectorsRead > 0)
+	// 	interrupt(0x21, 0, buffer, 0, 0);
+	// else
+	// 	interrupt(0x21, 0, "messag not found\r\n", 0, 0);
 
-	interrupt(0x21, 0, "Finished with readfile, moving on to executeProgram\r\n", 0, 0);
+	// interrupt(0x21, 0, "Finished with readfile, moving on to executeProgram\r\n", 0, 0);
 
-	interrupt(0x21, 4, "tstpr1", 0, 0);
+	// interrupt(0x21, 4, "tstpr2", 0, 0);
+
+	interrupt(0x21, 4, "shell", 0, 0);
 
 	while(1);
 }
@@ -130,6 +133,26 @@ void printString(char* chars)
 
 void terminate()
 {
+	// char term[14];
+	// term[0] = 'T';
+	// term[1] = 'e';
+	// term[2] = 'r';
+	// term[3] = 'm';
+	// term[4] = 'i';
+	// term[5] = 'n';
+	// term[6] = 'a';
+	// term[7] = 't';
+	// term[8] = 'i';
+	// term[9] = 'n';
+	// term[10] = 'g';
+	// term[11] = '\r';
+	// term[12] = '\n';
+	// term[13] = '\0';
+	
+	//printString("Terminating");
+	// printString(term);
+	// while(1);
+
 	char shellname[6];
 	shellname[0] = 's';
 	shellname[1] = 'h';
@@ -151,9 +174,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 3 ) {
 		readFile((char*)cx, (char*)bx, (int*)dx);
 	} else if ( ax == 4) {
-		interrupt(0x21, 0, "Int21 hit - executing \"", 0, 0);
-		interrupt(0x21, 0, (char*) bx, 0, 0);
-		interrupt(0x21, 0, "\".\r\n", 0, 0);
 		executeProgram((char*) bx);
 	} else if ( ax == 5) {
 		terminate();

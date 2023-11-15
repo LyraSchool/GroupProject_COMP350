@@ -23,63 +23,63 @@ int getDirname(char* fileName, char* directory)
 }
 
 
-void q_readFile(char* buffer, char* fileName, int* sectorsRead)
-{
-	// readFile implementation here
-	int dirAddr;	
-	char directory[512];
-	char* sector;
-	char secbuf[512];
-	int i;
-	int secRead = 0;
+// void q_readFile(char* buffer, char* fileName, int* sectorsRead)
+// {
+// 	// readFile implementation here
+// 	int dirAddr;	
+// 	char directory[512];
+// 	char* sector;
+// 	char secbuf[512];
+// 	int i;
+// 	int secRead = 0;
 
-	// Debug vars
-	char printbuf[200];
+// 	// Debug vars
+// 	char printbuf[200];
 
-	readSector(directory, 2);
-	dirAddr = getDirname(fileName, directory);
-	*sectorsRead = 0;
+// 	readSector(directory, 2);
+// 	dirAddr = getDirname(fileName, directory);
+// 	*sectorsRead = 0;
 	
-	if (dirAddr == -1) return;
+// 	if (dirAddr == -1) return;
 
 
-	sector = directory + (dirAddr * 16) + 6;
-	while (*sector != 0)
-	{
-		interrupt(0x21, 0, "Reading sector ", 0, 0);
-		itoa(*sector, printbuf);
-		interrupt(0x21, 0, printbuf, 0, 0);
-		interrupt(0x21, 0, "\r\n", 0, 0);
+// 	sector = directory + (dirAddr * 16) + 6;
+// 	while (*sector != 0)
+// 	{
+// 		interrupt(0x21, 0, "Reading sector ", 0, 0);
+// 		itoa(*sector, printbuf);
+// 		interrupt(0x21, 0, printbuf, 0, 0);
+// 		interrupt(0x21, 0, "\r\n", 0, 0);
 		
 		
-		readSector(secbuf, *sector);
-		interrupt(0x21, 0, "Reading sector\r\n", 0, 0);
-		for (i = 0; i < 512; i++)
-		{
-			// interrupt(0x21, 0, "Writing to address ", 0, 0);
-			// itoa((secRead * 512) + i, printbuf);
-			// interrupt(0x21, 0, printbuf, 0, 0);
-			// interrupt(0x21, 0, "\r\n", 0, 0);
-			buffer[(secRead * 512) + i] = secbuf[i];
-		}
-		interrupt(0x21, 0, "read sector\r\n", 0, 0);
+// 		readSector(secbuf, *sector);
+// 		interrupt(0x21, 0, "Reading sector\r\n", 0, 0);
+// 		for (i = 0; i < 512; i++)
+// 		{
+// 			// interrupt(0x21, 0, "Writing to address ", 0, 0);
+// 			// itoa((secRead * 512) + i, printbuf);
+// 			// interrupt(0x21, 0, printbuf, 0, 0);
+// 			// interrupt(0x21, 0, "\r\n", 0, 0);
+// 			buffer[(secRead * 512) + i] = secbuf[i];
+// 		}
+// 		interrupt(0x21, 0, "read sector\r\n", 0, 0);
 		
-		secRead = secRead + 1;
-		sector++;
-		interrupt(0x21, 0, "moving to sector ", 0, 0);
-		itoa(*sector, printbuf);
-		interrupt(0x21, 0, printbuf, 0, 0);
-		interrupt(0x21, 0, "\r\n", 0, 0);
+// 		secRead = secRead + 1;
+// 		sector++;
+// 		interrupt(0x21, 0, "moving to sector ", 0, 0);
+// 		itoa(*sector, printbuf);
+// 		interrupt(0x21, 0, printbuf, 0, 0);
+// 		interrupt(0x21, 0, "\r\n", 0, 0);
 
-	}
+// 	}
 
-	*sectorsRead = secRead;
+// 	*sectorsRead = secRead;
 
-	interrupt(0x21, 0, "Done reading", 0, 0);
+// 	interrupt(0x21, 0, "Done reading", 0, 0);
 		
 
 	
-}
+// }
 
 void readFile(char* buffer, char* fileName, int* sectorsRead)
 {

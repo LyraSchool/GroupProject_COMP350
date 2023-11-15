@@ -1,7 +1,6 @@
 .vscode/
 
-*.o
-
 bootloader
 diskc.img
 kernel
+tstpr2

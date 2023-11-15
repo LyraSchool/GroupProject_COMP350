@@ -4,12 +4,14 @@ CFLAGS = -ansi -c -I.
 
 
 .phony: all
-all: kernel bootloader loadfile tstpr1
+all: kernel bootloader loadfile tstpr1 tstpr2 shell
 	dd if=/dev/zero of=diskc.img bs=512 count=1000
 	dd if=bootloader of=diskc.img bs=512 count=1 conv=notrunc
 	./loadfile kernel
 	./loadfile message.txt
 	./loadfile tstpr1
+	./loadfile tstpr2
+	./loadfile shell
 #dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
 #dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
 	
@@ -22,6 +24,12 @@ loadfile: loadfile.c
 
 userlib.o: userlib.asm
 	as86 userlib.asm -o userlib.o
+
+shell: shell.o
+	ld86 -o shell -d shell.o userlib.o
+
+shell.o: shell.c
+	bcc $(CFLAGS) -o shell.o shell.c
 
 tstpr1: tstpr1.o userlib.o
 	ld86 -o tstpr1 -d tstpr1.o userlib.o
@@ -64,6 +72,7 @@ clean:
 	-rm loadfile
 	-rm tstpr1
 	-rm tstpr2
+	-rm shell
 
 .phony: qemu
 qemu: all
