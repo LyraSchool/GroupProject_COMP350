@@ -5,6 +5,8 @@ void syscall(void*, void*, void*, void*);
 
 void handleCommand(char* buffer);
 int strcmp(char* s1, char* s2, int n);
+void reverse(char* s);
+int imod(int value, int modulus);
 
 void main()
 {
@@ -34,6 +36,71 @@ int strcmp(char* s1, char* s2, int n)
     }
     return 0;
 }
+
+void memcopy(char* target, char* source, int amt, int targetOffset, int sourceOffset)
+{
+	int i;
+
+	for (i = 0; i < amt; i++)
+	{
+		target[targetOffset + i] = source[sourceOffset + i];
+	}
+}
+
+void itoa(int val, char* buffer)
+{
+	int i, sign;
+	
+	if ((sign = val) < 0) val = -val;
+
+	i = 0;
+	do {
+		buffer[i++] = imod(val, 10) + '0';
+	} while ((val /= 10) > 0);
+
+	if (sign < 0) buffer[i++] = '-';
+	buffer[i] = '\0';
+	reverse(buffer);
+}
+
+int imod(int val, int modulus)
+{
+	return val - (val / modulus);
+}
+
+void reverse(char* buffer)
+{
+	int i, j;
+	char c;
+	for (i = 0, j = strlen(buffer) - 1; i < j; i++, j--)
+	{
+		c = buffer[i];
+		buffer[i] = buffer[j];
+		buffer[j] = c;
+	}
+}
+
+int strlen(char* s)
+{
+	char* s2 = s;
+	int len = 0;
+	while (*s2 != '\0') {
+		len++;
+		s2++;
+	}
+	return len;
+}
+
+void getFileName(char* dir, char* fname, int entry)
+{
+	int i;
+	for (i = 0; i < 6; i++)
+	{
+		fname[i] = dir[(entry * 32) + i];
+		if (fname[i] == '\0') fname[i] = ' ';
+	} 
+}
+
 
 void builtin_type(char* buffer)
 {
@@ -82,6 +149,43 @@ void builtin_exec(char* buffer)
     syscall(4, filename, 0, 0);
 }
 
+void builtin_dir(char* buffer)
+{
+	char dir[512];
+	char direntry[32];
+	int filecount;
+	int numSectors;
+	char printbuf[10];
+	char fname[7];
+	int i, j;
+
+	filecount = 0;
+
+	syscall(2, dir, 2);
+
+	for (i = 0; i < 16; i++)
+	{
+		if (dir[i * 32] == '\0') continue;
+		filecount++;
+		getFileName(dir, fname, i);
+		numSectors = 0;
+		for (j = 6; j < 32; j++)
+		{
+			if (dir[(i * 32) + j] != 0x0) numSectors++;
+		}
+
+		syscall(0, fname);
+		syscall(0, " ");
+		itoa(numSectors * 512, printbuf);
+		syscall(0, printbuf);
+		syscall(0, "bytes\r\n");
+	}
+
+	itoa(filecount, printbuf);
+	syscall(0, printbuf);
+	syscall(0, " files found\r\n");
+}
+
 void sanitizeCommand(char* buffer)
 {
     int i;
@@ -106,6 +210,10 @@ void handleCommand(char* buffer)
     {
         builtin_exec(buffer);
     }
+	else if (!strcmp(buffer, "dir", 3))
+	{
+		builtin_dir(buffer);
+	}
     else
     {
         syscall(0, "Unrecognized command: \"", 0, 0);
