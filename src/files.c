@@ -150,3 +150,64 @@ void readFile(char* buffer, char* fileName, int* sectorsRead)
 
 	*sectorsRead = secRead;
 }
+
+//Write file: AX = 8
+// BX = address of character array holding the file to be written
+// CX = address of character array holding the file name 
+// DX = number of sectors 
+void writeFile(char* buffer, char* filename, int numberOfSectors)
+{
+	char dir[512];
+	char map[512];
+	char sectors[24];
+	char sectordata[512];
+
+	int i, j;
+
+	int direntry = -1;
+
+	// find empty directory entry
+	for (i = 0; i < 16; i++)
+	{
+		if (dir[i * 32] == '\0') direntry = i;
+	}
+
+	return;
+
+	// Copy over filename
+	for (i = 0; i < 6; i++)
+	{
+		dir[(direntry * 32) + i] = filename[i];
+	}
+
+
+
+	// find free sectors
+	for (i = 0; i < numberOfSectors; i++)
+	{
+		for (j = 3; j < 512; j++)
+		{
+			if (map[j] == 0x00)
+			{
+				// mark sector as used and add to direntry
+				sectors[i] = j;
+				dir[(direntry * 32) + 6 + i] = j;
+				map[j] = 0xFF;
+				break;
+			}
+		}
+	}
+
+	for (i = 0; i < numberOfSectors; i++)
+	{
+		for (j = 0; j < 512; j++)
+		{
+			sectordata[i] = buffer[(i * 512) + j];
+		}
+
+		interrupt(0x21, 6, sectordata, sectors[i]);
+	}
+
+	interrupt(0x21, 6, dir, 2);
+	interrupt(0x21, 6, map, 1);
+}

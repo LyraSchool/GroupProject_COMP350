@@ -143,6 +143,7 @@ void terminate()
 	executeProgram(shellname);
 }
 
+
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
 	char printbuf[31];
@@ -159,6 +160,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		executeProgram((char*) bx);
 	} else if ( ax == 5) {
 		terminate();
+	} else if ( ax == 8) {
+		writeFile((char*)bx, (char*)cx, dx);
 	} else {
 		// Invalid ax for Interrupt21\r\n
 		printbuf[ 0] = 'I';

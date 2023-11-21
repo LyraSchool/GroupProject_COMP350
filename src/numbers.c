@@ -18,7 +18,7 @@ void itoa(int val, char* buffer)
 
 int imod(int val, int modulus)
 {
-    return val - (val / modulus);
+    return val - (val / modulus) * modulus;
 }
 
 void reverse(char* buffer)

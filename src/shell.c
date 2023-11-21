@@ -65,7 +65,7 @@ void itoa(int val, char* buffer)
 
 int imod(int val, int modulus)
 {
-	return val - (val / modulus);
+	return val - (val / modulus) * modulus;
 }
 
 void reverse(char* buffer)
@@ -161,7 +161,7 @@ void builtin_dir(char* buffer)
 
 	filecount = 0;
 
-	syscall(2, dir, 2);
+	syscall(2, dir, 2, 0);
 
 	for (i = 0; i < 16; i++)
 	{
@@ -174,16 +174,16 @@ void builtin_dir(char* buffer)
 			if (dir[(i * 32) + j] != 0x0) numSectors++;
 		}
 
-		syscall(0, fname);
-		syscall(0, " ");
+		syscall(0, fname, 0, 0);
+		syscall(0, " ", 0, 0);
 		itoa(numSectors * 512, printbuf);
-		syscall(0, printbuf);
-		syscall(0, "bytes\r\n");
+		syscall(0, printbuf, 0, 0);
+		syscall(0, "bytes\r\n", 0, 0);
 	}
 
 	itoa(filecount, printbuf);
-	syscall(0, printbuf);
-	syscall(0, " files found\r\n");
+	syscall(0, printbuf, 0, 0);
+	syscall(0, " files found\r\n", 0, 0);
 }
 
 void sanitizeCommand(char* buffer)
