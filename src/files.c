@@ -169,10 +169,25 @@ void writeFile(char* buffer, char* filename, int numberOfSectors)
 	// find empty directory entry
 	for (i = 0; i < 16; i++)
 	{
-		if (dir[i * 32] == '\0') direntry = i;
+		char pb[8];
+		printChar('d');
+		printChar('i');
+		printChar('r');
+		printChar(':');
+		itoa(dir[i * 32], pb);
+		printString(pb);
+		printChar('\r');
+		printChar('\n');
+		
+
+		if (dir[i * 32] == '\0')
+		{
+			direntry = i;
+			break;
+		}
 	}
 
-	return;
+	if (direntry == -1)	return;
 
 	// Copy over filename
 	for (i = 0; i < 6; i++)

@@ -35,9 +35,9 @@ Using stem from Lyra
 
 ### Project D
 - Step 1: [Write Sector]
-- Step 2: [dir command]
+- Step 2: Lyra [dir command]
 - Step 3: [Delete File]
-- Step 4: [Write File]
+- Step 4: Lyra [Write File]
 - Step 5: [copy command]
 - Step 6: [create commmand]
 

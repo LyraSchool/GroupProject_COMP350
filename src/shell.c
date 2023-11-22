@@ -47,6 +47,16 @@ void memcopy(char* target, char* source, int amt, int targetOffset, int sourceOf
 	}
 }
 
+void memset(char* target, char val, int amt, int offset)
+{
+	int i;
+
+	for (i = 0; i < amt; i++)
+	{
+		target[offset + i] = val;
+	}
+}
+
 void itoa(int val, char* buffer)
 {
 	int i, sign;
@@ -186,6 +196,80 @@ void builtin_dir(char* buffer)
 	syscall(0, " files found\r\n", 0, 0);
 }
 
+void builtin_create(char* buffer)
+{
+	char fname[7];
+	char fdata[13312];
+	int foffset = 0;
+	char line[200];
+	int numSectors;
+	int i;
+	// char pb[20];
+	// char c[2];
+
+	//syscall(0x
+	for (i = 0; i < 6; i++)
+	{
+		fname[i] = buffer[7 + i];
+	}
+	
+	// syscall(0x0, "Creating File With filename: ", 0, 0);
+	// syscall(0x0, fname, 0, 0);
+	// syscall(0x0, "\r\n", 0, 0);
+	
+	while (1)
+	{
+		// clear line buffer
+		for (i = 0; i < 200; i++) line[i] = 0;
+
+		// readLine into line
+		syscall(0x1, line, 0, 0);
+		
+		// if line empty, break
+		if (line[0] == 0xd) break;
+		
+		// copy all line content into fdata
+		for (i = 0; line[i] != '\0'; i++)
+		{
+			// syscall(0x0, "Writing \'", 0, 0);
+			// c[0] = line[i];
+			// syscall(0x0, c, 0, 0);
+			// syscall(0x0, "\' to address ", 0, 0);
+			// itoa(foffset + i, pb);
+			// syscall(0x0, pb, 0, 0);
+			// syscall(0x0, "\r\n", 0, 0);
+			
+			
+			fdata[foffset + i] = line[i];
+		}
+
+		// syscall(0x0, "Wrote line \"", 0, 0);
+		// syscall(0x0, line, 0, 0);
+		// syscall(0x0, "\" to address ", 0, 0);
+		// itoa(foffset, pb);
+		// syscall(0x0, pb, 0, 0);
+		// syscall(0x0, "\r\n", 0, 0);
+		
+
+		foffset += i;
+	}
+
+	numSectors = (foffset / 512) + 1;
+	// syscall(0x0, "Writing file with ", 0, 0);
+	// itoa(numSectors, pb);
+	// syscall(0x0, pb, 0, 0);
+	// syscall(0x0, " sectors\r\n", 0, 0);
+	// syscall(0x0, "File data: \"\"\"\r\n", 0, 0);
+	// syscall(0x0, fdata, 0, 0);
+	// syscall(0x0, "\"\"\"\r\n", 0, 0);
+	
+
+	// syscall(0x0, fdata, 0, 0);
+
+	syscall(0x8, fdata, fname, numSectors);
+
+}
+
 void sanitizeCommand(char* buffer)
 {
     int i;
@@ -213,6 +297,10 @@ void handleCommand(char* buffer)
 	else if (!strcmp(buffer, "dir", 3))
 	{
 		builtin_dir(buffer);
+	}
+	else if (!strcmp(buffer, "create", 5))
+	{
+		builtin_create(buffer);
 	}
     else
     {

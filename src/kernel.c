@@ -51,6 +51,7 @@ void main()
 	// Creates int0x21
 	makeInterrupt21();
 
+	interrupt(0x21, 6, 0, 0);
 
 	// interrupt(0x21, 3, "messag", buffer, &sectorsRead);
 	
@@ -64,6 +65,7 @@ void main()
 	// interrupt(0x21, 4, "tstpr2", 0, 0);
 
 	interrupt(0x21, 4, "shell", 0, 0);
+
 
 	while(1);
 }
@@ -105,7 +107,9 @@ void readString(char* buffer)
             printChar(input);
         }
     }
-    buffer[bufferIndex] = 0x0;
+    buffer[bufferIndex] = 0xa;
+	buffer[bufferIndex + 1] = 0x0;
+	
     printChar(0xd); // CR
     printChar(0xa); // LF
 }
@@ -161,6 +165,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 5) {
 		terminate();
 	} else if ( ax == 8) {
+		printChar('w');
+		printChar('F');
+		printChar('\r');
+		printChar('\n');
+		
 		writeFile((char*)bx, (char*)cx, dx);
 	} else {
 		// Invalid ax for Interrupt21\r\n
