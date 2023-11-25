@@ -1,7 +1,7 @@
 #include "files.h"
 #include "asm.h"
 #include "numbers.h"
-
+#define ENTRY_LENGTH 32
 
 int getDirname(char* fileName, char* directory)
 {
@@ -230,21 +230,21 @@ void writeFile(char* buffer, char* filename, int numberOfSectors)
 void deleteFile(char* filename) {
     char dir[512];
     char map[512];
-    
+    int sectorIndex;
+    int entryIndex;
+
     readSector(dir, 1);
     readSector(map, 2);
 
-    int entryIndex;
+
     for (entryIndex = 0; entryIndex < 16; entryIndex++) {
 
-        if (strncmp(filename, dir + entryIndex * DIR_SIZE, 6) == 0) {
+        if (strncmp(filename, dir + entryIndex * ENTRY_LENGTH, 6) == 0) {
 
-            dir[entryIndex * DIR_SIZE] = '\0';
-
-
-            int sectorIndex;
+            dir[entryIndex * ENTRY_LENGTH] = '\0';
+ 
             for (sectorIndex = 6; sectorIndex < 32; sectorIndex++) {
-                int sectorNumber = dir[entryIndex * DIR_SIZE + sectorIndex];
+                int sectorNumber = dir[entryIndex * ENTRY_LENGTH + sectorIndex];
                 if (sectorNumber == 0) {
                     break;
                 }
