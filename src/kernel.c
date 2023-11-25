@@ -14,7 +14,7 @@ void readSector(char*, int);
 void handleInterrupt21(int, int, int, int);
 void printString(char*);
 void terminate();
-
+void writeSector(char*, int);
 
 /* Depends on printString to exist. */
 void main()
@@ -45,6 +45,8 @@ void main()
 
 	char buffer[13312];
 	int sectorsRead;
+
+	writeSector(data, sectorNumber);
 
 	// Clears the screen
 	interrupt(0x10, 0x03, 0, 0, 0);
@@ -122,6 +124,14 @@ void readSector(char* buffer, int sector)
     int dx = 0 * 256 + 0x80;
 
     interrupt(0x13, ax, bx, cx, dx);
+}
+
+void writeSector(char* buffer, int sector){
+
+	int ax = 3 * 256 + 1;
+	int bx = buffer;
+	int cx = 0 * 256 + (sector + 1);
+
 }
 
 void printString(char* chars)

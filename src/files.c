@@ -226,3 +226,36 @@ void writeFile(char* buffer, char* filename, int numberOfSectors)
 	interrupt(0x21, 6, dir, 2);
 	interrupt(0x21, 6, map, 1);
 }
+
+void deleteFile(char* filename) {
+    char dir[512];
+    char map[512];
+    
+    readSector(dir, 1);
+    readSector(map, 2);
+
+    int entryIndex;
+    for (entryIndex = 0; entryIndex < 16; entryIndex++) {
+
+        if (strncmp(filename, dir + entryIndex * DIR_SIZE, 6) == 0) {
+
+            dir[entryIndex * DIR_SIZE] = '\0';
+
+
+            int sectorIndex;
+            for (sectorIndex = 6; sectorIndex < 32; sectorIndex++) {
+                int sectorNumber = dir[entryIndex * DIR_SIZE + sectorIndex];
+                if (sectorNumber == 0) {
+                    break;
+                }
+                map[sectorNumber] = 0;
+            }
+
+
+            writeSector(dir, 1);
+            writeSector(map, 2);
+
+            break;
+        }
+    }
+}
