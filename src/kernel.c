@@ -43,17 +43,18 @@ void main()
 	interrupt(0x21,0,line,0,0);
 	*/
 
-	char buffer[13312];
-	int sectorsRead;
+	// char buffer[13312];
+	// int sectorsRead;
 
-	writeSector(data, sectorNumber);
+	// char data[512];
 
-	// Clears the screen
-	interrupt(0x10, 0x03, 0, 0, 0);
 	// Creates int0x21
 	makeInterrupt21();
 
-	interrupt(0x21, 6, 0, 0);
+	// Clears the screen
+	interrupt(0x10, 0x03, 0, 0, 0);
+	
+	// interrupt(0x21, 6, 0, 0, 0);
 
 	// interrupt(0x21, 3, "messag", buffer, &sectorsRead);
 	
@@ -131,7 +132,9 @@ void writeSector(char* buffer, int sector){
 	int ax = 3 * 256 + 1;
 	int bx = buffer;
 	int cx = 0 * 256 + (sector + 1);
+	int dx = 0 * 256 + 0x80;
 
+	interrupt(0x13, ax, bx, cx, dx);
 }
 
 void printString(char* chars)
@@ -174,46 +177,40 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		executeProgram((char*) bx);
 	} else if ( ax == 5) {
 		terminate();
+	} else if ( ax == 6) {
+		writeSector((char*)bx, cx);
 	} else if ( ax == 8) {
-		printChar('w');
-		printChar('F');
-		printChar('\r');
-		printChar('\n');
-		
 		writeFile((char*)bx, (char*)cx, dx);
 	} else {
 		// Invalid ax for Interrupt21\r\n
-		printbuf[ 0] = 'I';
-		printbuf[ 1] = 'n';
-		printbuf[ 2] = 'v';
-		printbuf[ 3] = 'a';
-		printbuf[ 4] = 'l';
-		printbuf[ 5] = 'i';
-		printbuf[ 6] = 'd';
-		printbuf[ 7] = ' ';
-		printbuf[ 8] = 'a';
-		printbuf[ 9] = 'x';
-		printbuf[10] = ' ';
-		printbuf[11] = 'f';
-		printbuf[12] = 'o';
-		printbuf[13] = 'r';
-		printbuf[14] = ' ';
-		printbuf[15] = 'I';
-		printbuf[16] = 'n';
-		printbuf[17] = 't';
-		printbuf[18] = 'e';
-		printbuf[19] = 'r';
-		printbuf[20] = 'r';
-		printbuf[21] = 'u';
-		printbuf[22] = 'p';
-		printbuf[23] = 't';
-		printbuf[24] = '2';
-		printbuf[25] = '1';
-		printbuf[26] = '\r';
-		printbuf[27] = '\n';
-		printbuf[28] = '\0';
-		
-		printString(printbuf);
+		printChar('I');
+		printChar('n');
+		printChar('v');
+		printChar('a');
+		printChar('l');
+		printChar('i');
+		printChar('d');
+		printChar(' ');
+		printChar('a');
+		printChar('x');
+		printChar(' ');
+		printChar('f');
+		printChar('o');
+		printChar('r');
+		printChar(' ');
+		printChar('I');
+		printChar('n');
+		printChar('t');
+		printChar('e');
+		printChar('r');
+		printChar('r');
+		printChar('u');
+		printChar('p');
+		printChar('t');
+		printChar('2');
+		printChar('1');
+		printChar('\r');
+		printChar('\n');
 	}
 
 }

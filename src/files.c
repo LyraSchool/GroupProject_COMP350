@@ -1,7 +1,23 @@
 #include "files.h"
 #include "asm.h"
 #include "numbers.h"
+
 #define ENTRY_LENGTH 32
+
+void writeSector(char*, int);
+
+
+int strncmp(char* s1, char* s2, int n)
+{
+    int i;
+    int diff;
+    for (i = 0; i < n; i++)
+    {
+        diff = s1[i] - s2[i];
+        if (diff != 0) return diff;
+    }
+    return 0;
+}
 
 int getDirname(char* fileName, char* directory)
 {
@@ -20,6 +36,51 @@ int getDirname(char* fileName, char* directory)
 	
 	if (match == 0) return -1;
 	else return addr;
+}
+
+void itohex(char* buf, int value)
+{
+	char dict[17];
+	dict[ 0] = '0';
+	dict[ 1] = '1';
+	dict[ 2] = '2';
+	dict[ 3] = '3';
+	dict[ 4] = '4';
+	dict[ 5] = '5';
+	dict[ 6] = '6';
+	dict[ 7] = '7';
+	dict[ 8] = '8';
+	dict[ 9] = '9';
+	dict[10] = 'A';
+	dict[11] = 'B';
+	dict[12] = 'C';
+	dict[13] = 'D';
+	dict[14] = 'E';
+	dict[15] = 'F';
+	dict[16] = '\0';
+
+	buf[0] = dict[(value & 0xF0) >> 4];
+	buf[1] = dict[(value & 0x0F) >> 0];
+	buf[2] = '\0';
+}
+
+
+void printSector(char* sector)
+{
+	int i = 0;
+	char pb[3];
+	for (i = 0; i < 512; i++)
+	{
+		if (imod(i, 26) == 0)
+		{
+			printChar('\r');
+			printChar('\n');			
+		}
+
+		itohex(pb, sector[i]);
+		printString(pb);
+		printChar(' ');
+	}
 }
 
 
@@ -165,21 +226,14 @@ void writeFile(char* buffer, char* filename, int numberOfSectors)
 	int i, j;
 
 	int direntry = -1;
+		
+	readSector(map, 1);
+	readSector(dir, 2);
+
 
 	// find empty directory entry
-	for (i = 0; i < 16; i++)
+	for (i = 3; i < 16; i++)
 	{
-		char pb[8];
-		printChar('d');
-		printChar('i');
-		printChar('r');
-		printChar(':');
-		itoa(dir[i * 32], pb);
-		printString(pb);
-		printChar('\r');
-		printChar('\n');
-		
-
 		if (dir[i * 32] == '\0')
 		{
 			direntry = i;
@@ -217,10 +271,10 @@ void writeFile(char* buffer, char* filename, int numberOfSectors)
 	{
 		for (j = 0; j < 512; j++)
 		{
-			sectordata[i] = buffer[(i * 512) + j];
+			sectordata[j] = buffer[(i * 512) + j];
 		}
 
-		interrupt(0x21, 6, sectordata, sectors[i]);
+		writeSector(sectordata, sectors[i]);
 	}
 
 	interrupt(0x21, 6, dir, 2);

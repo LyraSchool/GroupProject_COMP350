@@ -4,7 +4,7 @@
 void syscall(void*, void*, void*, void*);
 
 void handleCommand(char* buffer);
-int strcmp(char* s1, char* s2, int n);
+int strncmp(char* s1, char* s2, int n);
 void reverse(char* s);
 int imod(int value, int modulus);
 
@@ -25,7 +25,7 @@ void main()
 
 }
 
-int strcmp(char* s1, char* s2, int n)
+int strncmp(char* s1, char* s2, int n)
 {
     int i;
     int diff;
@@ -204,19 +204,14 @@ void builtin_create(char* buffer)
 	char line[200];
 	int numSectors;
 	int i;
-	// char pb[20];
-	// char c[2];
+	char pb[20];
+	char c[2];
 
-	//syscall(0x
 	for (i = 0; i < 6; i++)
 	{
 		fname[i] = buffer[7 + i];
 	}
-	
-	// syscall(0x0, "Creating File With filename: ", 0, 0);
-	// syscall(0x0, fname, 0, 0);
-	// syscall(0x0, "\r\n", 0, 0);
-	
+		
 	while (1)
 	{
 		// clear line buffer
@@ -231,40 +226,15 @@ void builtin_create(char* buffer)
 		// copy all line content into fdata
 		for (i = 0; line[i] != '\0'; i++)
 		{
-			// syscall(0x0, "Writing \'", 0, 0);
-			// c[0] = line[i];
-			// syscall(0x0, c, 0, 0);
-			// syscall(0x0, "\' to address ", 0, 0);
-			// itoa(foffset + i, pb);
-			// syscall(0x0, pb, 0, 0);
-			// syscall(0x0, "\r\n", 0, 0);
-			
 			
 			fdata[foffset + i] = line[i];
 		}
 
-		// syscall(0x0, "Wrote line \"", 0, 0);
-		// syscall(0x0, line, 0, 0);
-		// syscall(0x0, "\" to address ", 0, 0);
-		// itoa(foffset, pb);
-		// syscall(0x0, pb, 0, 0);
-		// syscall(0x0, "\r\n", 0, 0);
-		
 
 		foffset += i;
 	}
 
 	numSectors = (foffset / 512) + 1;
-	// syscall(0x0, "Writing file with ", 0, 0);
-	// itoa(numSectors, pb);
-	// syscall(0x0, pb, 0, 0);
-	// syscall(0x0, " sectors\r\n", 0, 0);
-	// syscall(0x0, "File data: \"\"\"\r\n", 0, 0);
-	// syscall(0x0, fdata, 0, 0);
-	// syscall(0x0, "\"\"\"\r\n", 0, 0);
-	
-
-	// syscall(0x0, fdata, 0, 0);
 
 	syscall(0x8, fdata, fname, numSectors);
 
@@ -275,9 +245,9 @@ void sanitizeCommand(char* buffer)
     int i;
     for (i = 0; i < BUFFERLEN; i++)
     {
-        if (buffer[i] == '\0' && i > 0)
+        if (buffer[i] == '\0' && i > 1)
         {
-            buffer[i - 1] = '\0';
+            buffer[i - 2] = '\0';
         }
     }
 }
@@ -286,19 +256,19 @@ void handleCommand(char* buffer)
 {
     sanitizeCommand(buffer);
 
-    if (!strcmp(buffer, "type", 4))
+    if (!strncmp(buffer, "type", 4))
     {
         builtin_type(buffer);
     }
-    else if (!strcmp(buffer, "exec", 4))
+    else if (!strncmp(buffer, "exec", 4))
     {
         builtin_exec(buffer);
     }
-	else if (!strcmp(buffer, "dir", 3))
+	else if (!strncmp(buffer, "dir", 3))
 	{
 		builtin_dir(buffer);
 	}
-	else if (!strcmp(buffer, "create", 5))
+	else if (!strncmp(buffer, "create", 5))
 	{
 		builtin_create(buffer);
 	}
