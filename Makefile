@@ -4,7 +4,7 @@ CFLAGS = -ansi -c -Isrc/
 
 
 .phony: all
-all: bin/kernel bin/bootloader tools/bin/loadfile bin/tstpr1 bin/tstpr2 bin/shell
+all: bin/kernel bin/bootloader tools/bin/loadfile bin/tstpr1 bin/tstpr2 bin/shell bin/number bin/letter
 	dd if=/dev/zero of=diskc.img bs=512 count=1000
 	dd if=bin/bootloader of=diskc.img bs=512 count=1 conv=notrunc
 	./tools/bin/loadfile bin/kernel diskc.img
@@ -12,6 +12,8 @@ all: bin/kernel bin/bootloader tools/bin/loadfile bin/tstpr1 bin/tstpr2 bin/shel
 	./tools/bin/loadfile bin/tstpr1 diskc.img
 	./tools/bin/loadfile bin/tstpr2 diskc.img
 	./tools/bin/loadfile bin/shell diskc.img
+	./tools/bin/loadfile bin/number diskc.img
+	./tools/bin/loadfile bin/letter diskc.img
 #dd if=kernel of=diskc.img bs=512 conv=notrunc seek=3
 #dd if=message.txt of=diskc.img bs=512 count=1 seek=30 conv=notrunc
 	
@@ -49,6 +51,29 @@ obj/tstpr1.o: src/tstpr1.c
 obj/tstpr2.o: src/tstpr2.c
 	mkdir -p obj
 	bcc $(CFLAGS) -o obj/tstpr2.o src/tstpr2.c
+
+
+bin/number: obj/number.o obj/userlib.o
+	mkdir -p bin
+	ld86 -o bin/number -d obj/number.o obj/userlib.o
+
+obj/number.o: src/number.c
+	mkdir -p obj
+	bcc $(CFLAGS) -o obj/number.o src/number.c
+
+
+bin/letter: obj/letter.o obj/userlib.o
+	mkdir -p bin
+	ld86 -o bin/letter -d obj/letter.o obj/userlib.o
+
+obj/letter.o: src/letter.c
+	mkdir -p obj
+	bcc $(CFLAGS) -o obj/letter.o src/letter.c
+
+
+
+
+
 
 obj/iotools.o: src/iotools.c src/iotools.h src/numbers.h
 	mkdir -p obj
