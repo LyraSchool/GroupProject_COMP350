@@ -26,9 +26,9 @@ obj/userlib.o: src/userlib.asm
 	mkdir -p obj
 	as86 src/userlib.asm -o obj/userlib.o
 
-bin/shell: obj/shell.o
+bin/shell: obj/shell.o obj/userlib.o obj/numbers.o obj/iotools.o
 	mkdir -p bin
-	ld86 -o bin/shell -d obj/shell.o obj/userlib.o
+	ld86 -o bin/shell -d obj/shell.o obj/userlib.o obj/numbers.o obj/iotools.o
 
 obj/shell.o: src/shell.c
 	mkdir -p obj
@@ -49,6 +49,10 @@ obj/tstpr1.o: src/tstpr1.c
 obj/tstpr2.o: src/tstpr2.c
 	mkdir -p obj
 	bcc $(CFLAGS) -o obj/tstpr2.o src/tstpr2.c
+
+obj/iotools.o: src/iotools.c src/iotools.h src/numbers.h
+	mkdir -p obj
+	bcc $(CFLAGS) -o obj/iotools.o src/iotools.c
 
 obj/numbers.o: src/numbers.c src/numbers.h
 	mkdir -p obj

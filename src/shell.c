@@ -1,12 +1,11 @@
+#include "numbers.h"
+#include "usrlib.h"
+#include "iotools.h"
 
 #define BUFFERLEN 200
 
-void syscall(void*, void*, void*, void*);
-
 void handleCommand(char* buffer);
 int strncmp(char* s1, char* s2, int n);
-void reverse(char* s);
-int imod(int value, int modulus);
 
 void main()
 {
@@ -22,7 +21,6 @@ void main()
 
     syscall(5, 0, 0, 0);
     while (1);
-
 }
 
 int strncmp(char* s1, char* s2, int n)
@@ -57,49 +55,6 @@ void memset(char* target, char val, int amt, int offset)
 	}
 }
 
-void itoa(int val, char* buffer)
-{
-	int i, sign;
-	
-	if ((sign = val) < 0) val = -val;
-
-	i = 0;
-	do {
-		buffer[i++] = imod(val, 10) + '0';
-	} while ((val /= 10) > 0);
-
-	if (sign < 0) buffer[i++] = '-';
-	buffer[i] = '\0';
-	reverse(buffer);
-}
-
-int imod(int val, int modulus)
-{
-	return val - (val / modulus) * modulus;
-}
-
-void reverse(char* buffer)
-{
-	int i, j;
-	char c;
-	for (i = 0, j = strlen(buffer) - 1; i < j; i++, j--)
-	{
-		c = buffer[i];
-		buffer[i] = buffer[j];
-		buffer[j] = c;
-	}
-}
-
-int strlen(char* s)
-{
-	char* s2 = s;
-	int len = 0;
-	while (*s2 != '\0') {
-		len++;
-		s2++;
-	}
-	return len;
-}
 
 void getFileName(char* dir, char* fname, int entry)
 {
@@ -240,6 +195,62 @@ void builtin_create(char* buffer)
 
 }
 
+void builtin_del(char* buffer)
+{
+	char fname[7];
+	int i;
+
+	for (i = 0; i < 6; i++)
+	{
+		fname[i] = buffer[4 + i];
+	}
+
+	syscall(0x7, fname, 0, 0);
+}
+
+void builtin_copy(char* buffer)
+{
+	char source[7];
+	char target[7];
+	char printBuffer[20];
+	int i, j;
+	int numSectors;
+
+	char filedata[13312];
+
+	//char* thing = "copy fnam me2";
+	for (i = 0; i < 6 && buffer[5 + i] != ' '; i++)
+	{
+		//if (isprintable(buffer[5+i]))
+		source[i] = buffer[5 + i];
+	}
+	source[i] = '\0';
+	i++;
+
+	for (j = 0; j < 6; j++)
+	{
+		target[j] = buffer[5 + i + j];
+	}
+	target[j] = '\0';
+
+
+	puts("Source: \"");
+	puts(source);
+	puts("\" | Target: \"");
+	puts(target);
+	puts("\"\r\n");
+
+
+	puts("Reading file data in.");
+	syscall(0x3, source, filedata, &numSectors);
+	puts("Read ");
+	itoa(numSectors, printBuffer);
+	puts(printBuffer);
+	puts(" sectors in, and writing out.");
+	syscall(0x8, filedata, target, numSectors);
+
+}
+
 void sanitizeCommand(char* buffer)
 {
     int i;
@@ -271,6 +282,14 @@ void handleCommand(char* buffer)
 	else if (!strncmp(buffer, "create", 5))
 	{
 		builtin_create(buffer);
+	}
+	else if (!strncmp(buffer, "del", 3))
+	{
+		builtin_del(buffer);
+	}
+	else if (!strncmp(buffer, "copy", 4))
+	{
+		builtin_copy(buffer);
 	}
     else
     {

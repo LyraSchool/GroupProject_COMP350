@@ -38,32 +38,6 @@ int getDirname(char* fileName, char* directory)
 	else return addr;
 }
 
-void itohex(char* buf, int value)
-{
-	char dict[17];
-	dict[ 0] = '0';
-	dict[ 1] = '1';
-	dict[ 2] = '2';
-	dict[ 3] = '3';
-	dict[ 4] = '4';
-	dict[ 5] = '5';
-	dict[ 6] = '6';
-	dict[ 7] = '7';
-	dict[ 8] = '8';
-	dict[ 9] = '9';
-	dict[10] = 'A';
-	dict[11] = 'B';
-	dict[12] = 'C';
-	dict[13] = 'D';
-	dict[14] = 'E';
-	dict[15] = 'F';
-	dict[16] = '\0';
-
-	buf[0] = dict[(value & 0xF0) >> 4];
-	buf[1] = dict[(value & 0x0F) >> 0];
-	buf[2] = '\0';
-}
-
 
 void printSector(char* sector)
 {
@@ -199,6 +173,8 @@ void readFile(char* buffer, char* fileName, int* sectorsRead)
 
 	for (i = 0; i < 26; i++)
 	{
+		if (sectors[i] == 0x00) break;
+
 		readSector(sectordata, sectors[i]);
 
 		for (j = 0; j < 512; j++)
@@ -287,13 +263,13 @@ void deleteFile(char* filename) {
     int sectorIndex;
     int entryIndex;
 
-    readSector(dir, 1);
-    readSector(map, 2);
+    readSector(dir, 2);
+    readSector(map, 1);
 
 
     for (entryIndex = 0; entryIndex < 16; entryIndex++) {
 
-        if (strncmp(filename, dir + entryIndex * ENTRY_LENGTH, 6) == 0) {
+        if (strncmp(filename, dir + (entryIndex * ENTRY_LENGTH), 6) == 0) {
 
             dir[entryIndex * ENTRY_LENGTH] = '\0';
  
@@ -306,8 +282,8 @@ void deleteFile(char* filename) {
             }
 
 
-            writeSector(dir, 1);
-            writeSector(map, 2);
+            writeSector(dir, 2);
+            writeSector(map, 1);
 
             break;
         }
