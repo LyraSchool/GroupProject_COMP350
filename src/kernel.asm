@@ -1,4 +1,4 @@
-kernel.asm
+;kernel.asm
 ;Margaret Black, 2007
 
 ;kernel.asm contains assembly functions that you can use in your kernel
