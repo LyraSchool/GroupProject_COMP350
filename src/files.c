@@ -131,7 +131,19 @@ void readFile(char* buffer, char* fileName, int* sectorsRead)
 	// Debug vars
 	char printbuf[100];
 	char fname[7];
+	char pb[3];
 
+	// printChar('K');
+	// printChar(':');
+	// printChar(' ');
+	// printChar('R');
+	// printChar('-');
+	// printChar('D');
+	// printChar('I');
+	// printChar('R');
+	// printChar('\r');
+	// printChar('\n');
+	
 	readSector(directory, 2);
 
 	for (direntry = 0; direntry < 16; direntry++)
@@ -145,10 +157,52 @@ void readFile(char* buffer, char* fileName, int* sectorsRead)
 		fname[4] = directory[(direntry * 32) + 4];
 		fname[5] = directory[(direntry * 32) + 5];
 		fname[6] = '\0';
+
+		// printChar('C');
+		// printChar('"');
+		// itohex(pb, fname[0]);
+		// printString(pb);
+		// itohex(pb, fname[1]);
+		// printString(pb);
+		// itohex(pb, fname[2]);
+		// printString(pb);
+		// itohex(pb, fname[3]);
+		// printString(pb);
+		// itohex(pb, fname[4]);
+		// printString(pb);
+		// itohex(pb, fname[5]);
+		// printString(pb);
+		// printChar('"');
+		// printChar('A');
+		// printChar('"');
+		// itohex(pb, fileName[0]);
+		// printString(pb);
+		// itohex(pb, fileName[1]);
+		// printString(pb);
+		// itohex(pb, fileName[2]);
+		// printString(pb);
+		// itohex(pb, fileName[3]);
+		// printString(pb);
+		// itohex(pb, fileName[4]);
+		// printString(pb);
+		// itohex(pb, fileName[5]);
+		// printString(pb);
+		// printChar('"');
+		// printChar('\r');
+		// printChar('\n');
+		
+		
 		
 		for (i = 0; i < 6; i++)
 		{
-			if (directory[(direntry * 32) + i] != fileName[i]) match = 0;
+			if (directory[(direntry * 32) + i] != fileName[i])
+			{
+				match = 0;
+				break;
+			}
+
+			if (fileName[i] == '\0') break;
+
 		}
 
 		if (match)

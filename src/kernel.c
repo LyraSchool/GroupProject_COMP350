@@ -37,9 +37,6 @@ void main()
 	// Creates int0x21
 	makeInterrupt21();
 
-	// Clears the screen
-	interrupt(0x10, 0x03, 0, 0, 0);
-
 	for (i = 0; i < 8; i++)
 	{
 		processActive[i] = 0;
@@ -52,6 +49,9 @@ void main()
 	// Create interrupt for the process scheduler
 	makeTimerInterrupt();
 
+
+	// Clears the screen
+	interrupt(0x10, 0x03, 0, 0, 0);
 	// Launch to shell
 	interrupt(0x21, 4, "shell", 0, 0);
 

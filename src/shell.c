@@ -80,9 +80,11 @@ void builtin_type(char* buffer)
     filename[4] = buffer[9];
     filename[5] = buffer[10];
     filename[6] = '\0';
-    
 
 
+	// puts("SH: Attempting to read file \"");
+	// puts(filename);
+	// puts("\"\r\n");
     syscall(3, filename, filedata, &sectorsRead);
 
     if (sectorsRead == 0)
@@ -234,19 +236,19 @@ void builtin_copy(char* buffer)
 	target[j] = '\0';
 
 
-	puts("Source: \"");
-	puts(source);
-	puts("\" | Target: \"");
-	puts(target);
-	puts("\"\r\n");
+	// puts("Source: \"");
+	// puts(source);
+	// puts("\" | Target: \"");
+	// puts(target);
+	// puts("\"\r\n");
 
 
-	puts("Reading file data in.");
+	// puts("Reading file data in.");
 	syscall(0x3, source, filedata, &numSectors);
-	puts("Read ");
-	itoa(numSectors, printBuffer);
-	puts(printBuffer);
-	puts(" sectors in, and writing out.");
+	// puts("Read ");
+	// itoa(numSectors, printBuffer);
+	// puts(printBuffer);
+	// puts(" sectors in, and writing out.");
 	syscall(0x8, filedata, target, numSectors);
 
 }
