@@ -1,10 +1,12 @@
 .vscode/
 
-bootloader
+bin/bootloader
 diskc.img
-kernel
-tstpr1
-tstpr2
-shell
+bin/kernel
+bin/tstpr1
+bin/tstpr2
+bin/shell
 
 *.o
+bin/letter
+bin/number

@@ -7,66 +7,52 @@
 #include "files.h"
 #include "program.h"
 
+void handleInterrupt21(int, int, int, int);
+void handleTimerInterrupt(int, int);
+
+void returnFromTimer(int segment, int sp);
+
+void makeTimerInterrupt();
+void makeInterrupt21();
 
 void readString(char*);
 void printChar(char);
 void readSector(char*, int);
-void handleInterrupt21(int, int, int, int);
 void printString(char*);
 void terminate();
 void writeSector(char*, int);
 
+int processActive[8];
+int processStackPointer[8];
+int currentProcess;
+
+
+#define iToSeg(i) (i + 2) * 0x1000
+
 /* Depends on printString to exist. */
 void main()
 {
-	/* Variables have to be declared at the top of the function. */
-	/*
-	char buf[50];
-	char buffer[512];
-	char line[80];
-
-	printString("Hello World");
-	printString("\r\n");
-
-	printString("Enter a string: ");
-
-	readString(buf);
-	printString(buf);
-	printString("\r\n");
-
-	readSector(buffer, 30);
-	printString(buffer);
-	printString("\r\n");
-
-	makeInterrupt21();
-	interrupt(0x21,1,line,0,0);
-	interrupt(0x21,0,line,0,0);
-	*/
-
-	// char buffer[13312];
-	// int sectorsRead;
-
-	// char data[512];
-
+	int i;
+	
 	// Creates int0x21
 	makeInterrupt21();
 
 	// Clears the screen
 	interrupt(0x10, 0x03, 0, 0, 0);
+
+	for (i = 0; i < 8; i++)
+	{
+		processActive[i] = 0;
+		processStackPointer[i] = 0xFF00;
+	}
+	currentProcess = -1;
+
+
 	
-	// interrupt(0x21, 6, 0, 0, 0);
+	// Create interrupt for the process scheduler
+	makeTimerInterrupt();
 
-	// interrupt(0x21, 3, "messag", buffer, &sectorsRead);
-	
-	// if (sectorsRead > 0)
-	// 	interrupt(0x21, 0, buffer, 0, 0);
-	// else
-	// 	interrupt(0x21, 0, "messag not found\r\n", 0, 0);
-
-	// interrupt(0x21, 0, "Finished with readfile, moving on to executeProgram\r\n", 0, 0);
-
-	// interrupt(0x21, 4, "tstpr2", 0, 0);
-
+	// Launch to shell
 	interrupt(0x21, 4, "shell", 0, 0);
 
 
@@ -215,5 +201,15 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		printChar('\n');
 	}
 
+}
+
+void handleTimerInterrupt(int segment, int sp)
+{
+	// printChar('T');
+	// printChar('i');
+	// printChar('c');
+
+	
+	returnFromTimer(segment, sp);
 }
 
