@@ -87,13 +87,9 @@ obj/files.o: src/files.c src/files.h src/asm.h
 	mkdir -p obj
 	bcc $(CFLAGS) -o obj/files.o src/files.c 
 
-obj/program.o: src/program.c src/program.h src/asm.h
-	mkdir -p obj
-	bcc $(CFLAGS) -o obj/program.o src/program.c
-
-bin/kernel: obj/kernel_asm.o obj/kernel_c.o obj/files.o obj/numbers.o obj/program.o
+bin/kernel: obj/kernel_asm.o obj/kernel_c.o obj/files.o obj/numbers.o 
 	mkdir -p bin
-	ld86 -o bin/kernel -d obj/kernel_c.o obj/kernel_asm.o obj/files.o obj/numbers.o obj/program.o
+	ld86 -o bin/kernel -d obj/kernel_c.o obj/kernel_asm.o obj/files.o obj/numbers.o
 
 obj/kernel_asm.o: src/kernel.asm
 	mkdir -p obj
