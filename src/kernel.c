@@ -5,6 +5,9 @@
 //Lauren Rezendes
 
 #include "files.h"
+#include "numbers.h"
+
+#define MAX_PID 8
 
 void handleInterrupt21(int, int, int, int);
 void handleTimerInterrupt(int, int);
@@ -14,6 +17,15 @@ void returnFromTimer(int segment, int sp);
 void makeTimerInterrupt();
 void makeInterrupt21();
 
+void putInMemory(int segment, int address, char character);
+int interrupt(int number, int AX, int BX, int CX, int DX);
+
+void initializeProgram(int segment);
+void launchProgram(int segment);
+
+int setKernelDataSegment();
+void restoreDataSegment(int segment);
+
 void readString(char*);
 void printChar(char);
 void readSector(char*, int);
@@ -21,12 +33,12 @@ void printString(char*);
 void terminate();
 void writeSector(char*, int);
 
-int processActive[8];
-int processStackPointer[8];
+int processActive[MAX_PID];
+int processStackPointer[MAX_PID];
 int currentProcess;
 
 
-#define iToSeg(i) (i + 2) * 0x1000
+#define pidToSeg(i) (i + 2) * 0x1000
 
 /* Depends on printString to exist. */
 void main()
@@ -36,7 +48,7 @@ void main()
 	// Creates int0x21
 	makeInterrupt21();
 
-	for (i = 0; i < 8; i++)
+	for (i = 0; i < MAX_PID; i++)
 	{
 		processActive[i] = 0;
 		processStackPointer[i] = 0xFF00;
@@ -45,15 +57,16 @@ void main()
 
 
 	
-	// Create interrupt for the process scheduler
-	makeTimerInterrupt();
+	
 
 
 	// Clears the screen
 	interrupt(0x10, 0x03, 0, 0, 0);
 	// Launch to shell
 	interrupt(0x21, 4, "shell", 0, 0);
-
+	
+	// Create interrupt for the process scheduler
+	makeTimerInterrupt();
 
 	while(1);
 }
@@ -135,65 +148,53 @@ void printString(char* chars)
 
 void executeProgram(char* filename)
 {
-	// executeProgram implementation here
+	char buffer[13312];
+	
 	int sectorsRead;
 	int segment = 0x2000;
-	char buffer[13312];
 	int i;
-	char printbuf[25];
+	int oldSeg;
+	int pid;
 
-	// printString("executeProgram called\r\n");
-
-	//Step 1 of Step 2
-	// interrupt(0x21, 0, "EXP - Reading program\r\n", 0, 0);
 	readFile(buffer, filename, &sectorsRead);
+
 
 	if (sectorsRead == 0)
 	{
-		printbuf[ 0] = 'U';
-		printbuf[ 1] = 'n';
-		printbuf[ 2] = 'a';
-		printbuf[ 3] = 'b';
-		printbuf[ 4] = 'l';
-		printbuf[ 5] = 'e';
-		printbuf[ 6] = ' ';
-		printbuf[ 7] = 't';
-		printbuf[ 8] = 'o';
-		printbuf[ 9] = ' ';
-		printbuf[10] = 'f';
-		printbuf[11] = 'i';
-		printbuf[12] = 'n';
-		printbuf[13] = 'd';
-		printbuf[14] = ' ';
-		printbuf[15] = 'p';
-		printbuf[16] = 'r';
-		printbuf[17] = 'o';
-		printbuf[18] = 'g';
-		printbuf[19] = 'r';
-		printbuf[20] = 'a';
-		printbuf[21] = 'm';
-		printbuf[22] = ' ';
-		printbuf[23] = '\"';
-		printbuf[24] = '\0';
-		printString(printbuf);
+		oldSeg = setKernelDataSegment();
+		printString("Unable to find program \"");
+		restoreDataSegment(oldSeg);
+
 		printString(filename);
-		printbuf[0] = '\"';
-		printbuf[1] = '\r';
-		printbuf[2] = '\n';
-		printbuf[3] = '\0';
-		printString(printbuf);
+		
+		oldSeg = setKernelDataSegment();
+		printString("\"\r\n");
+		restoreDataSegment(oldSeg);
+		
 		return;
 	}
 
-	//Step 2 of Step 2
-	// interrupt(0x21, 0, "Starting the for loop\r\n", 0, 0);
+	oldSeg = setKernelDataSegment();
+	for (pid = 0; pid < MAX_PID; pid++)
+	{
+		if (processActive[pid] == 0) break;
+	}
+	restoreDataSegment(oldSeg);
+
+	segment = pidToSeg(pid);
 
 	for ( i=0; i<13312; i++){
 		putInMemory(segment, i, buffer[i]);
 	}
-	// interrupt(0x21, 0, "launching\r\n", 0, 0);
-	//Step 3 of Step 2
-	launchProgram(segment);
+
+	initializeProgram(segment);
+
+	oldSeg = setKernelDataSegment();
+	processActive[pid] = 1;
+	processStackPointer[pid] = 0xFF00;
+	restoreDataSegment(oldSeg);
+
+	// launchProgram(segment);
 }
 
 void terminate()
@@ -211,7 +212,7 @@ void terminate()
 
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
-	char printbuf[31];
+	int oldSeg;
 
 	if ( ax == 0 ) {
 		printString((char*) bx);
@@ -232,46 +233,38 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 8) {
 		writeFile((char*)bx, (char*)cx, dx);
 	} else {
-		// Invalid ax for Interrupt21\r\n
-		printChar('I');
-		printChar('n');
-		printChar('v');
-		printChar('a');
-		printChar('l');
-		printChar('i');
-		printChar('d');
-		printChar(' ');
-		printChar('a');
-		printChar('x');
-		printChar(' ');
-		printChar('f');
-		printChar('o');
-		printChar('r');
-		printChar(' ');
-		printChar('I');
-		printChar('n');
-		printChar('t');
-		printChar('e');
-		printChar('r');
-		printChar('r');
-		printChar('u');
-		printChar('p');
-		printChar('t');
-		printChar('2');
-		printChar('1');
-		printChar('\r');
-		printChar('\n');
+		oldSeg = setKernelDataSegment();
+		printString("Invalid ax for Interrupt 21\r\n");
+		restoreDataSegment(oldSeg);
 	}
 
 }
 
 void handleTimerInterrupt(int segment, int sp)
 {
-	// printChar('T');
-	// printChar('i');
-	// printChar('c');
+	int new_segment, new_sp;
+	int i;
+	char pb[10];
 
-	
+	int dataseg = setKernelDataSegment();
+
+	if (currentProcess != -1)
+	{
+		processStackPointer[currentProcess] = sp;
+	}
+
+	do
+	{
+		currentProcess++;
+		if (currentProcess >= MAX_PID) currentProcess = 0;
+	} while (processActive[currentProcess] != 1);
+
+
+	segment = pidToSeg(currentProcess);
+	sp = processStackPointer[currentProcess];
+
+	restoreDataSegment(dataseg);
+
 	returnFromTimer(segment, sp);
 }
 

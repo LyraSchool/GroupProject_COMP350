@@ -5,4 +5,6 @@
 
 void syscall(void*, void*, void*, void*);
 
+void enableInterrupts();
+
 #endif
