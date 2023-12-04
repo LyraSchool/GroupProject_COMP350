@@ -41,18 +41,13 @@ Using stem from Lyra
 - Step 5: [copy command]
 - Step 6: [create commmand]
 
-
-
-Complex: 2, 4, 6
-1 & 5 seem relatively simple; 3 is a bit more involved.
-
-
-
-
-
-
-
-
-
+### Project E
+- Step 1: [Timer Interrupt]
+- Step 2: [Process Table]
+- Step 3: [Execute Program]
+- Step 4: [Scheduling]
+- Step 5: [Adjustments & testing]
+- Step 6: [Kill Process]
+- Step 7: [Process Blocking]
 
 
