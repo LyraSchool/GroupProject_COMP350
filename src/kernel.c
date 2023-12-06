@@ -201,7 +201,7 @@ void executeProgram(char* filename)
 void killProcess(int pid)
 {
 	int dataSeg = setKernelDataSegment();
-	processActive[currentProcess] = 0;
+	processActive[pid] = 0;
 	restoreDataSegment(dataSeg);
 }
 
