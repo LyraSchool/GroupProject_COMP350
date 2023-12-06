@@ -101,10 +101,26 @@ void builtin_type(char* buffer)
     //syscall(5, 0, 0, 0);
 }
 
+void builtin_execbg(char* buffer)
+{
+    char filename[7];
+	int pid;
+
+    filename[0] = buffer[7];
+    filename[1] = buffer[8];
+    filename[2] = buffer[9];
+    filename[3] = buffer[10];
+    filename[4] = buffer[11];
+    filename[5] = buffer[12];
+    filename[6] = '\0';
+
+    syscall(4, filename, &pid, 0);
+}
+
 void builtin_exec(char* buffer)
 {
     char filename[7];
-
+	int pid;
 
     filename[0] = buffer[5];
     filename[1] = buffer[6];
@@ -114,7 +130,8 @@ void builtin_exec(char* buffer)
     filename[5] = buffer[10];
     filename[6] = '\0';
 
-    syscall(4, filename, 0, 0);
+    syscall(4, filename, &pid, 0);
+	syscall(10, pid, 0, 0);
 }
 
 void builtin_dir(char* buffer)
@@ -278,6 +295,10 @@ void handleCommand(char* buffer)
     if (!strncmp(buffer, "type", 4))
     {
         builtin_type(buffer);
+    }
+    else if (!strncmp(buffer, "execbg", 6))
+    {
+        builtin_execbg(buffer);
     }
     else if (!strncmp(buffer, "exec", 4))
     {
