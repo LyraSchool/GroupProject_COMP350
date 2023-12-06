@@ -11,6 +11,7 @@ void main()
 {
     char* prompt = "\r\nA:> ";
     char linebuffer[BUFFERLEN];
+    void enableInterrupts();
 
     while (1)
     {
@@ -253,6 +254,11 @@ void builtin_copy(char* buffer)
 
 }
 
+void builtin_kill(char* buffer)
+{
+	int pid = buffer[5] - '0';
+	syscall(9, pid, 0, 0);
+}
 void sanitizeCommand(char* buffer)
 {
     int i;
@@ -292,6 +298,10 @@ void handleCommand(char* buffer)
 	else if (!strncmp(buffer, "copy", 4))
 	{
 		builtin_copy(buffer);
+	}
+	else if (!strncmp(buffer, "kill", 4))
+	{
+		builtin_kill(buffer);
 	}
     else
     {

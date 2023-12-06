@@ -32,6 +32,7 @@ void readSector(char*, int);
 void printString(char*);
 void terminate();
 void writeSector(char*, int);
+void killProcess(int);
 
 int processActive[MAX_PID];
 int processStackPointer[MAX_PID];
@@ -197,16 +198,18 @@ void executeProgram(char* filename)
 	// launchProgram(segment);
 }
 
+void killProcess(int pid)
+{
+	int dataSeg = setKernelDataSegment();
+	processActive[currentProcess] = 0;
+	restoreDataSegment(dataSeg);
+}
+
 void terminate()
 {
-	char shellname[6];
-	shellname[0] = 's';
-	shellname[1] = 'h';
-	shellname[2] = 'e';
-	shellname[3] = 'l';
-	shellname[4] = 'l';
-	shellname[5] = '\0';
-	executeProgram(shellname);
+	int dataSeg = setKernelDataSegment();
+	processActive[currentProcess] = 0;
+	while (1);
 }
 
 
@@ -232,11 +235,13 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		deleteFile((char*)bx);
 	} else if ( ax == 8) {
 		writeFile((char*)bx, (char*)cx, dx);
+	} else if ( ax == 9){
+		killProcess(bx);
 	} else {
 		oldSeg = setKernelDataSegment();
 		printString("Invalid ax for Interrupt 21\r\n");
 		restoreDataSegment(oldSeg);
-	}
+	} 
 
 }
 
@@ -247,6 +252,15 @@ void handleTimerInterrupt(int segment, int sp)
 	char pb[10];
 
 	int dataseg = setKernelDataSegment();
+
+	for(i=0; i<8; i++)
+        {
+                putInMemory(0xb800,60*2+i*4,i+0x30);
+                if(processActive[i]==1)
+                        putInMemory(0xb800,60*2+i*4+1,0x20);
+                else
+                        putInMemory(0xb800,60*2+i*4+1,0);
+        }
 
 	if (currentProcess != -1)
 	{
