@@ -148,7 +148,7 @@ void printString(char* chars)
 
 }
 
-void executeProgram(char* filename, int* )
+void executeProgram(char* filename, int* rc)
 {
 	char buffer[13312];
 	
@@ -201,25 +201,26 @@ void executeProgram(char* filename, int* )
 
 void killProcess(int pid)
 {
+	char pb[2];
 	int dataSeg = setKernelDataSegment();
-	processActive[currentProcess] = 0;
+	printString("Killing Process ");
+	itoa(pid, pb);
+	printString(pb);
+	printString("\r\n");
+	processActive[pid] = 0;
 	restoreDataSegment(dataSeg);
 }
 
 void terminate()
 {
+	char pb[2];
 	int dataSeg = setKernelDataSegment();
+	printString("Killing Process ");
+	itoa(currentProcess, pb);
+	printString(pb);
+	printString("\r\n");
 	processActive[currentProcess] = 0;
 	while (1);
-	int pid;
-	char shellname[6];
-	shellname[0] = 's';
-	shellname[1] = 'h';
-	shellname[2] = 'e';
-	shellname[3] = 'l';
-	shellname[4] = 'l';
-	shellname[5] = '\0';
-	executeProgram(shellname, &pid);
 }
 
 void waitForPid(int pid)
