@@ -33,6 +33,7 @@ void printString(char*);
 void terminate();
 void writeSector(char*, int);
 
+int processWaitingFor[MAX_PID];
 int processActive[MAX_PID];
 int processStackPointer[MAX_PID];
 int currentProcess;
@@ -146,7 +147,7 @@ void printString(char* chars)
 
 }
 
-void executeProgram(char* filename)
+void executeProgram(char* filename, int* )
 {
 	char buffer[13312];
 	
@@ -154,7 +155,7 @@ void executeProgram(char* filename)
 	int segment = 0x2000;
 	int i;
 	int oldSeg;
-	int pid;
+	int new_pid;
 
 	readFile(buffer, filename, &sectorsRead);
 
@@ -175,13 +176,13 @@ void executeProgram(char* filename)
 	}
 
 	oldSeg = setKernelDataSegment();
-	for (pid = 0; pid < MAX_PID; pid++)
+	for (new_pid = 0; new_pid < MAX_PID; new_pid++)
 	{
-		if (processActive[pid] == 0) break;
+		if (processActive[new_pid] == 0) break;
 	}
 	restoreDataSegment(oldSeg);
 
-	segment = pidToSeg(pid);
+	segment = pidToSeg(new_pid);
 
 	for ( i=0; i<13312; i++){
 		putInMemory(segment, i, buffer[i]);
@@ -190,8 +191,8 @@ void executeProgram(char* filename)
 	initializeProgram(segment);
 
 	oldSeg = setKernelDataSegment();
-	processActive[pid] = 1;
-	processStackPointer[pid] = 0xFF00;
+	processActive[new_pid] = 1;
+	processStackPointer[new_pid] = 0xFF00;
 	restoreDataSegment(oldSeg);
 
 	// launchProgram(segment);
@@ -199,6 +200,7 @@ void executeProgram(char* filename)
 
 void terminate()
 {
+	int pid;
 	char shellname[6];
 	shellname[0] = 's';
 	shellname[1] = 'h';
@@ -206,7 +208,15 @@ void terminate()
 	shellname[3] = 'l';
 	shellname[4] = 'l';
 	shellname[5] = '\0';
-	executeProgram(shellname);
+	executeProgram(shellname, &pid);
+}
+
+void waitForPid(int pid)
+{
+	int dataseg = setKernelDataSegment();
+	processWaitingFor[currentProcess] = pid;
+	processActive[currentProcess] = 2;
+	restoreDataSegment(dataseg);
 }
 
 
@@ -223,7 +233,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 	} else if ( ax == 3 ) {
 		readFile((char*)cx, (char*)bx, (int*)dx);
 	} else if ( ax == 4) {
-		executeProgram((char*) bx);
+		executeProgram((char*) bx, (int*) cx);
 	} else if ( ax == 5) {
 		terminate();
 	} else if ( ax == 6) {
@@ -232,6 +242,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		deleteFile((char*)bx);
 	} else if ( ax == 8) {
 		writeFile((char*)bx, (char*)cx, dx);
+	} else if ( ax == 10) {
+		waitForPid(bx);
 	} else {
 		oldSeg = setKernelDataSegment();
 		printString("Invalid ax for Interrupt 21\r\n");
@@ -267,4 +279,12 @@ void handleTimerInterrupt(int segment, int sp)
 
 	returnFromTimer(segment, sp);
 }
+
+/*
+	Notes for Lyra:
+	
+	Step 7:
+		Need to edit terminate() to find any processes waiting on this pid and set them to active
+
+*/
 
