@@ -203,10 +203,6 @@ void killProcess(int pid)
 {
 	char pb[2];
 	int dataSeg = setKernelDataSegment();
-	printString("Killing Process ");
-	itoa(pid, pb);
-	printString(pb);
-	printString("\r\n");
 	processActive[pid] = 0;
 	restoreDataSegment(dataSeg);
 }
