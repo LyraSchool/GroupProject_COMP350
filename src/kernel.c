@@ -202,7 +202,7 @@ void executeProgram(char* filename, int* )
 void killProcess(int pid)
 {
 	int dataSeg = setKernelDataSegment();
-	processActive[currentProcess] = 0;
+	processActive[pid] = 0;
 	restoreDataSegment(dataSeg);
 }
 
