@@ -10,3 +10,6 @@ bin/shell
 *.o
 bin/letter
 bin/number
+bootloader
+kernel
+settings.txt
