@@ -64,7 +64,8 @@ void getFileName(char* dir, char* fname, int entry)
 	{
 		fname[i] = dir[(entry * 32) + i];
 		if (fname[i] == '\0') fname[i] = ' ';
-	} 
+	}
+	fname[6] = '\0';
 }
 
 
