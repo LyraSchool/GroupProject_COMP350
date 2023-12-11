@@ -10,6 +10,25 @@ Group Members:
 
 Ensure that make, gcc, bcc, and nasm are installed.
 
+`make simulator` uses the simulator by Dr. Black to load the disk and execute it.
+Make sure that the settings are set to: Cylinders: 63, Heads: 255, Sectors: 100
+This requires java to be installed!
+
+If qemu is installed, `make qemu` will use `qemu-system-x86-64` to load the disk and execute it.
+
+## Commands
+| Command                  | Description 
+|--------------------------|--------------
+| `dir`                    | Lists out contents of disk
+| `type <filename>`        | Prints contents of file to screen
+| `copy <source> <target>` | Copies source file to target
+| `create <filename>`      | Creates a file using every line input until a blank line is submitted
+| `del <filename>`         | Deletes the given file
+| `exec <filename>`        | Runs a program from the given file
+| `execbg <filename>`      | Runs a program from the given file in the background
+| `kill <pid>`             | Kills the given pid
+ 
+
 
 ## Code Blame
 
