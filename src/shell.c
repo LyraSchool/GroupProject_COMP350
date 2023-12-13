@@ -277,6 +277,7 @@ void builtin_kill(char* buffer)
 	int pid = buffer[5] - '0';
 	syscall(9, pid, 0, 0);
 }
+
 void sanitizeCommand(char* buffer)
 {
     int i;

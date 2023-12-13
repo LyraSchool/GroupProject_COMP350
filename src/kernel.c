@@ -207,6 +207,9 @@ void waitForPid(int pid)
 	int dataSeg = setKernelDataSegment();
 	processActive[currentProcess] = 2;
 	processWaitingOn[currentProcess] = pid;
+
+	while (processActive[processWaitingOn[currentProcess]] != 0);
+
 	restoreDataSegment(dataSeg);
 }
 
