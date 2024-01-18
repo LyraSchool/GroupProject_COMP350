@@ -237,6 +237,11 @@ void terminate()
 	while (1);
 }
 
+void clearScreen()
+{
+	interrupt(0x10, 0x03, 0, 0, 0);
+}
+
 
 void handleInterrupt21(int ax, int bx, int cx, int dx)
 {
@@ -264,6 +269,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx)
 		killProcess(bx);
 	} else if ( ax == 10){
 		waitForPid(bx);
+	} else if ( ax == 11){
+		clearScreen();
 	} else {
 		oldSeg = setKernelDataSegment();
 		printString("Invalid ax for Interrupt 21\r\n");

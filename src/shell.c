@@ -278,6 +278,23 @@ void builtin_kill(char* buffer)
 	syscall(9, pid, 0, 0);
 }
 
+void builtin_help(char* buffer)
+{
+	puts("BKR_OS command help:\r\n\r\n");
+	puts("| Command                | Description\r\n");
+	puts("|------------------------|-------------------\r\n");
+	puts("| clear                  | Clears the screen\r\n");
+	puts("| dir                    | Lists out contents of disk\r\n");
+	puts("| type <filename>        | Prints contents of file to screen\r\n");
+	puts("| copy <source> <target> | Copies source file to target\r\n");
+	puts("| create <filename>      | Creates a file using every line input until a blank line is submitted\r\n");
+	puts("| del <filename>         | Deletes the given file\r\n");
+	puts("| exec <filename>        | Runs a program from the given file\r\n");
+	puts("| execbg <filename>      | Runs a program from the given file in the background\r\n");
+	puts("| kill <pid>             | Kills the given pid\r\n");
+
+}
+
 void sanitizeCommand(char* buffer)
 {
     int i;
@@ -310,6 +327,10 @@ void handleCommand(char* buffer)
 	{
 		builtin_dir(buffer);
 	}
+	else if (!strncmp(buffer, "ls", 2))
+	{
+		builtin_dir(buffer);
+	}
 	else if (!strncmp(buffer, "create", 5))
 	{
 		builtin_create(buffer);
@@ -325,6 +346,14 @@ void handleCommand(char* buffer)
 	else if (!strncmp(buffer, "kill", 4))
 	{
 		builtin_kill(buffer);
+	}
+	else if (!strncmp(buffer, "clear", 5))
+	{
+		syscall(11, 0, 0, 0);
+	}
+	else if (!strncmp(buffer, "help", 4))
+	{
+		builtin_help(buffer);
 	}
     else
     {
